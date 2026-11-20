@@ -47,22 +47,30 @@ async function readFeed([src, url]) {
 }
 
 // ---- Gemini (free tier) ----
+const MODELS = [...new Set([MODEL, "gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-2.5-flash-lite"])];
+let goodModel = null;
 async function gemini(prompt) {
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
-    method: "POST",
-    headers: { "x-goog-api-key": GEMINI_API_KEY, "content-type": "application/json" },
-    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.2 } }),
-  });
-  if (r.status === 429) throw Object.assign(new Error("Gemini free-tier limit reached"), { quota: true });
-  if (!r.ok) throw new Error("Gemini " + r.status);
-  return (await r.json()).candidates?.[0]?.content?.parts?.map(p => p.text || "").join("") || "";
+  let last = "";
+  for (const m of goodModel ? [goodModel] : MODELS) {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, {
+      method: "POST",
+      headers: { "x-goog-api-key": GEMINI_API_KEY, "content-type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.2 } }),
+    });
+    if (r.status === 429) throw Object.assign(new Error("Gemini free-tier limit reached (429)"), { quota: true });
+    if (r.status === 404) { last = `${m}: not found`; continue; } // try the next model name
+    if (!r.ok) throw Object.assign(new Error(`Gemini ${m} HTTP ${r.status}: ${(await r.text()).slice(0, 250)}`), { fatal: true });
+    goodModel = m;
+    return (await r.json()).candidates?.[0]?.content?.parts?.map(p => p.text || "").join("") || "";
+  }
+  throw Object.assign(new Error("No Gemini model name worked. " + last), { fatal: true });
 }
 
 // RSS gives only a short snippet, so length adapts: 80-120 words only when the source has enough text.
 // A shorter validated summary is better than a padded one that invents facts.
 async function rewrite(a) {
   const src = `${a.title}. ${a.desc}`, sw = wc(src);
-  const [lo, hi] = sw >= 100 ? [80, 120] : [25, Math.min(60, Math.max(30, Math.round(sw * 1.5)))];
+  const [lo, hi] = sw >= 100 ? [80, 120] : [20, Math.max(45, Math.min(80, Math.round(sw * 2)))];
   let note = "";
   for (let i = 0; i < 2; i++) {
     const out = await gemini(`You are a financial news editor. Using ONLY the source text below, return JSON:
@@ -76,6 +84,7 @@ SOURCE: ${src}`);
       note = `Previous attempt failed (${n} words; numbers not in source: ${bad.join(",") || "none"}). Fix it.`;
     } catch { note = "Previous output was not valid JSON."; }
   }
+  console.error("Rejected:", a.title.slice(0, 70), "-", note);
   return null; // unvalidated -> not published
 }
 
@@ -143,11 +152,13 @@ async function run() {
   let db = await load(), added = 0;
   const lists = await Promise.all(FEEDS.map(readFeed)), items = [];
   for (let i = 0; items.length < 80 && lists.some(l => l[i]); i++) lists.forEach(l => l[i] && items.push(l[i])); // round-robin
+  let tried = 0;
   for (const a of items) {
     if (added >= MAX_NEW) break;
     const t = Date.parse(a.date), id = "story-" + sha(a.link.split("?")[0]);
     if (t && Date.now() - t > 3 * 864e5) continue;
     if (db.some(x => x.id === id || similar(x.sourceTitle, a.title))) continue; // duplicate
+    if (++tried > 12) break; // keep free-tier usage low
     try {
       const j = await rewrite(a);
       await sleep(5000); // stay well inside free-tier per-minute limits
@@ -160,12 +171,12 @@ async function run() {
         logo: logoDomain(j.company, `${a.title}. ${a.desc}`), source: { name: a.src, url: a.link }, sourceTitle: a.title, published: new Date(t || Date.now()).toISOString(),
       });
       added++;
-    } catch (e) { console.error("Skipped:", a.title, "-", e.message); if (e.quota) break; }
+    } catch (e) { console.error("Skipped:", a.title, "-", e.message); if (e.quota || e.fatal) break; }
   }
   for (const old of db.slice(KEEP)) if (old.img) await unlink(`${OUT}/${old.img}`).catch(() => {});
   db = db.slice(0, KEEP);
   await mkdir(OUT, { recursive: true });
   await writeFile(DB, JSON.stringify(db));
-  console.log(`Added ${added}. Total ${db.length}.`);
+  console.log(`Feed items: ${items.length}. Tried: ${tried}. Added ${added}. Total ${db.length}.`);
 }
 run();
