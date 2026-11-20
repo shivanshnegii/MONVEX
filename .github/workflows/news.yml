@@ -1,0 +1,25 @@
+name: MONVEX news
+on:
+  schedule:
+    - cron: "7 */3 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  news:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node news-engine.mjs
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      - run: |
+          git config user.name "monvex-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add docs
+          git diff --cached --quiet || (git commit -m "news update" && git push)
