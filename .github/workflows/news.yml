@@ -1,8 +1,8 @@
 name: MONVEX news
 on:
   schedule:
-    - cron: "7 */3 * * *"
-  workflow_dispatch:
+    - cron: "*/30 * * * *"   # every 30 min: prices every run, news only when new stories exist
+  workflow_dispatch:         # lets you run it manually from the Actions tab
 permissions:
   contents: write
 jobs:
