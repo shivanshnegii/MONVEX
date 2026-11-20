@@ -10,7 +10,7 @@ import { createHash } from "node:crypto";
 
 const { GEMINI_API_KEY, CF_ACCOUNT_ID, CF_API_TOKEN } = process.env;
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
-const MAX_NEW = +(process.env.MAX_NEW || 4), KEEP = 60, OUT = "./docs", DB = OUT + "/news.json", COVERS = OUT + "/covers";
+const MAX_NEW = +(process.env.MAX_NEW || 3), KEEP = 60, OUT = "./docs", DB = OUT + "/news.json", COVERS = OUT + "/covers";
 const CATS = ["Markets", "India", "Crypto", "Commodities", "Tech"];
 const MOTIF = { Markets: "chart", India: "bank", Crypto: "coin", Commodities: "gold", Tech: "chip" };
 const FEEDS = [ // a dead feed is skipped, not fatal. Check URLs in a browser if one stops producing news.
@@ -106,7 +106,39 @@ async function cover(id, scene, dir) {
   } catch (e) { console.error("Cover skipped:", e.message); return null; } // article still publishes, site shows its chart
 }
 
+// ---- Market prices + charts (Yahoo Finance chart endpoint: free, no key, unofficial -> may change) ----
+const SYMS = [["SENSEX", "^BSESN"], ["NIFTY 50", "^NSEI"], ["S&P 500", "^GSPC"], ["NASDAQ", "^IXIC"], ["GOLD", "GC=F"], ["BITCOIN", "BTC-USD"]];
+const RANGES = { "1D": ["1d", "5m"], "1W": ["5d", "30m"], "1M": ["1mo", "1d"], "1Y": ["1y", "1wk"] };
+const thin = (a, n = 60) => { if (a.length <= n) return a; return Array.from({ length: n }, (_, i) => a[Math.round(i * (a.length - 1) / (n - 1))]); };
+async function yahoo(sym, [range, interval]) {
+  const r = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=${range}&interval=${interval}`, { headers: { "user-agent": "Mozilla/5.0 (compatible; MONVEX-news/1.0)" }, signal: AbortSignal.timeout(15000) });
+  if (!r.ok) throw new Error(r.status);
+  const j = (await r.json()).chart?.result?.[0];
+  if (!j) throw new Error("no data");
+  return j;
+}
+async function markets() {
+  const items = [];
+  for (const [name, sym] of SYMS) {
+    try {
+      const series = {}; let meta;
+      for (const [k, v] of Object.entries(RANGES)) {
+        const j = await yahoo(sym, v);
+        if (k === "1D") meta = j.meta; // previous close is only correct for the 1-day request
+        series[k] = thin((j.indicators.quote[0].close || []).filter(x => x != null).map(x => +x.toFixed(2)));
+        await sleep(400);
+      }
+      const price = meta.regularMarketPrice, prev = meta.chartPreviousClose ?? meta.previousClose;
+      if (!(price > 0) || !(prev > 0)) throw new Error("bad price");
+      items.push({ name, price, prev, chg: +((price - prev) / prev * 100).toFixed(2), high: meta.regularMarketDayHigh ?? price, low: meta.regularMarketDayLow ?? price, series });
+    } catch (e) { console.error("Market skipped:", name, e.message); }
+  }
+  if (items.length) { await mkdir(OUT, { recursive: true }); await writeFile(OUT + "/markets.json", JSON.stringify({ updated: new Date().toISOString(), items })); }
+  console.log(`Markets updated: ${items.length}/${SYMS.length}`);
+}
+
 async function run() {
+  await markets().catch(err => console.error("Markets failed:", err.message));
   if (!GEMINI_API_KEY) { console.error("Missing GEMINI_API_KEY"); process.exit(1); }
   let db = await load(), added = 0;
   const lists = await Promise.all(FEEDS.map(readFeed)), items = [];
