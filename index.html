@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MONVEX — Markets • Money • Momentum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#ffffff;--bg2:#faf7ff;--card:#f6f0ff;--line:#e2d3fa;--tx:#1e1033;--mu:#6b5b8a;--em:#9333ea;--em2:#6d28d9;--up:#16a34a;--dn:#dc2626;--r:14px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0}
+html,body{background:var(--bg);color:var(--tx);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;overflow-x:hidden;max-width:100%}
+html{scrollbar-gutter:stable}body{-webkit-font-smoothing:antialiased;line-height:1.5;font-feature-settings:"cv11"}h1,h2,h3,h4,h5{letter-spacing:-.02em;font-weight:600}.tk .p,.tk .c,.wi{font-variant-numeric:tabular-nums}:focus-visible{outline:2px solid #9333ea99;outline-offset:2px}
+body.rev header,body.rev main{transition:opacity 1s ease 1.5s,transform 1s ease 1.5s}
+body.lock:not(.rev) header,body.lock:not(.rev) main{opacity:0}body.lock:not(.rev) main{transform:translateY(14px)}
+body{background:radial-gradient(900px 500px at 75% -10%,#c084fc4d,transparent),radial-gradient(700px 420px at 5% 0%,#f472b633,transparent),var(--bg);min-height:100vh}
+body.lock{overflow:hidden;height:100%}
+button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;border:0}
+.glow{border:1px solid var(--line);transition:border-color .25s,box-shadow .25s,transform .25s,background .25s}
+.glow:hover,.glow:focus-within{border-color:#9333ea73;box-shadow:0 0 0 1px #9333ea1a,0 6px 22px #9333ea14}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+/* intro */
+#intro{position:fixed;inset:0;z-index:100;background:linear-gradient(180deg,#fdf4ff,#ede4ff 55%,#fbcfe8);display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;transition:opacity .9s ease 1.5s}
+#intro.go{opacity:0;pointer-events:none}
+#intro.go .ic{opacity:0;transform:scale(1.04);transition:opacity .5s,transform .5s}
+.ic{text-align:center;position:relative}
+.halo{position:absolute;left:50%;top:50%;width:560px;max-width:90vw;height:260px;transform:translate(-50%,-60%);background:radial-gradient(closest-side,#9333ea55,#f472b655 60%,transparent);opacity:0;animation:fade 2.4s .3s forwards,pulse 5s 2.7s ease-in-out infinite;filter:blur(8px)}
+.logo{display:flex;justify-content:center;font-weight:700;font-size:clamp(40px,10vw,92px);letter-spacing:.14em;padding-left:.14em;position:relative;animation:track 2.8s cubic-bezier(.16,1,.3,1) .2s both}
+.logo span{display:inline-block;opacity:0;transform:translateY(28px);filter:blur(6px);animation:letter 1.3s cubic-bezier(.16,1,.3,1) forwards}
+.logo span:nth-child(1){animation-delay:.2s}.logo span:nth-child(2){animation-delay:.32s}.logo span:nth-child(3){animation-delay:.44s}.logo span:nth-child(4){animation-delay:.56s}.logo span:nth-child(5){animation-delay:.68s}.logo span:nth-child(6){animation-delay:.8s;color:var(--em2)}
+.tag{margin-top:14px;font-size:clamp(10px,2.4vw,13px);letter-spacing:.42em;color:var(--mu);padding-left:.42em;opacity:0;animation:fade 1.4s 1.9s forwards;position:relative}
+.scrollhint{position:absolute;bottom:max(32px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:12px;font-size:11px;letter-spacing:.34em;padding-left:.34em;color:var(--mu);opacity:0;animation:fade 1s 3s forwards}
+.chev{width:8px;height:8px;border-right:1.5px solid var(--em2);border-bottom:1.5px solid var(--em2);transform:rotate(45deg);opacity:0;animation:chev 1.6s infinite;margin-top:-6px}.chev+.chev{margin-top:-8px;animation-delay:.2s}
+.mouse{width:22px;height:34px;border:1.5px solid var(--mu);border-radius:12px;position:relative}
+.mouse:after{content:"";position:absolute;left:50%;top:6px;width:3px;height:7px;margin-left:-1.5px;border-radius:2px;background:var(--em2);animation:wheel 1.6s infinite}
+.skip{position:absolute;top:max(18px,env(safe-area-inset-top,0px));right:20px;font-size:12px;color:var(--mu);padding:8px 12px;border-radius:8px;opacity:0;animation:fade 1s 2s forwards}
+#candles{position:absolute;inset:0;pointer-events:none;opacity:0;background:repeating-linear-gradient(0deg,#9333ea12 0 1px,transparent 1px 12.5%),repeating-linear-gradient(90deg,#9333ea08 0 1px,transparent 1px 8.333%);-webkit-mask-image:linear-gradient(#000 75%,transparent);mask-image:linear-gradient(#000 75%,transparent)}
+#intro.go #candles{opacity:1;transition:opacity .6s}
+.cd{position:absolute;width:1.1%;min-width:5px;transform-origin:50% 100%;transform:scaleY(0);opacity:0}
+#intro.go .cd{animation:pop .5s cubic-bezier(.2,.9,.3,1) forwards}
+.vb{position:absolute;bottom:0;width:1.1%;min-width:5px;background:currentColor;opacity:0}#intro.go .vb{animation:vol .5s ease forwards}
+.lp{position:absolute;left:0;right:0;height:0;border-top:1px dashed #9333ea66;opacity:0}#intro.go .lp{animation:lp .5s 1.6s forwards}.lp span{position:absolute;right:2%;top:-11px;background:#9333ea;color:#ffffff;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px}
+.cd i{position:absolute;left:50%;width:1px;background:currentColor;transform:translateX(-50%);top:-14px;bottom:-14px}
+.cd b{position:absolute;inset:0;background:currentColor;border-radius:2px}
+@keyframes pop{0%{transform:scaleY(0);opacity:0}100%{transform:scaleY(1);opacity:1}}@keyframes vol{to{opacity:.3}}@keyframes lp{to{opacity:1}}@keyframes track{from{letter-spacing:.02em}to{letter-spacing:.14em}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}@keyframes chev{0%{opacity:0;transform:translateY(-4px) rotate(45deg)}50%{opacity:.9}100%{opacity:0;transform:translateY(4px) rotate(45deg)}}
+@keyframes letter{to{opacity:1;transform:none;filter:none}}
+@keyframes fade{to{opacity:1}}
+@keyframes wheel{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(12px)}}
+/* header */
+header{position:sticky;top:0;z-index:50;background:#ffffffe6;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.hd{display:flex;align-items:center;gap:18px;height:64px}
+.brand{font-weight:700;letter-spacing:.24em;font-size:18px;cursor:pointer}.brand em{font-style:normal;color:var(--em2)}
+nav{display:flex;gap:4px;margin-left:12px}
+nav button{padding:8px 13px;border-radius:9px;font-size:14px;font-weight:500;color:var(--mu);transition:color .2s,background .2s}
+nav button:hover,nav button.on{color:var(--tx);background:#9333ea1a}
+.sp{flex:1}
+.sr{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:10px;padding:0 12px;height:38px;width:240px}
+.sr input{background:none;border:0;outline:0;width:100%;font-size:14px}
+.ib{height:38px;padding:0 14px;border-radius:10px;background:var(--card);font-size:14px;display:flex;align-items:center;gap:6px}
+.burger{display:none}
+@media(max-width:860px){nav{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg2);flex-direction:column;padding:10px 20px;margin:0;border-bottom:1px solid var(--line)}nav.open{display:flex}.burger{display:flex}.sr{width:auto;flex:1;min-width:0}.hd{gap:10px}.wl span{display:none}nav button{padding:13px 8px;text-align:left;font-size:15px}}
+/* sections */
+main{padding:28px 0 72px}
+.tick{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+@media(max-width:1000px){.tick{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.tick{grid-template-columns:repeat(2,1fr)}}
+.tk{background:var(--card);border-radius:var(--r);padding:16px;position:relative;min-width:0}
+.tk small{color:var(--mu);font-size:11px;letter-spacing:.08em}
+.tk .p{font-size:18px;font-weight:600;margin:4px 0 2px}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.tk .c{font-size:12px;font-weight:600}
+.star{position:absolute;right:8px;top:8px;font-size:15px;color:var(--mu);padding:4px}
+.star.on{color:#fbbf24}
+.tk svg{display:block;width:100%;height:30px;margin-top:6px}
+.note{font-size:11px;color:var(--mu);margin:10px 2px 0}
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin:40px 0 20px;align-items:center}
+.cats h2{margin-right:auto;font-size:20px}
+.chip{padding:8px 14px;border-radius:999px;font-size:13px;background:var(--card);border:1px solid var(--line);color:var(--mu);transition:.25s}
+.chip:hover{border-color:#9333ea73;box-shadow:0 0 0 1px #9333ea1a,0 4px 16px #9333ea14;color:var(--tx)}
+.chip.on{background:var(--em);border-color:var(--em);color:#ffffff;font-weight:600}
+.feat{display:grid;grid-template-columns:1.1fr 1fr;background:var(--card);border-radius:18px;overflow:hidden;cursor:pointer;margin-bottom:18px}
+@media(max-width:800px){.feat{grid-template-columns:1fr}}
+.feat .tx{padding:32px;display:flex;flex-direction:column;gap:14px;justify-content:center}
+.feat h3{font-size:clamp(22px,3.4vw,32px);line-height:1.2}
+.feat .ch{background:#ffffff;min-height:240px;padding:12px;display:flex}
+.feat .ch svg,.art .ch svg{width:100%;height:100%;min-height:220px}
+.meta{display:flex;gap:10px;font-size:12px;color:var(--mu);align-items:center}
+.tg{color:var(--em2);background:#9333ea1a;padding:3px 9px;border-radius:999px;font-weight:600;font-size:11px;letter-spacing:.05em}
+p.sm{color:var(--mu);font-size:14px;line-height:1.55}
+.more{color:var(--em2);font-size:14px;font-weight:600;margin-top:4px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:960px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.nc{background:var(--card);border-radius:var(--r);padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;min-width:0}
+.nc svg{width:100%;height:84px;display:block;border-radius:8px;background:#ffffff}
+.nc h4{font-size:16px;line-height:1.35}
+.sk{background:linear-gradient(90deg,var(--card),#eadcff,var(--card));background-size:200% 100%;animation:sh 1.2s infinite;border-radius:var(--r);height:210px}
+@keyframes sh{to{background-position:-200% 0}}
+.empty{color:var(--mu);padding:40px;text-align:center;grid-column:1/-1}
+.brief{margin-top:40px;background:linear-gradient(180deg,#efe3ff,var(--card));border-radius:18px;padding:26px}
+.brief h2{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:20px}
+.lab{font-size:10px;letter-spacing:.12em;border:1px solid #fbbf2466;color:#fbbf24;padding:3px 8px;border-radius:6px}
+.bg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+@media(max-width:800px){.bg{grid-template-columns:1fr}}
+.bx{background:#ffffff;border-radius:12px;padding:16px}
+.bx h5{font-size:12px;letter-spacing:.1em;margin-bottom:8px;color:var(--mu)}
+.bx li{font-size:14px;line-height:1.55;margin:0 0 6px 16px;color:#3b2a5c}
+.bull h5{color:var(--up)}.bear h5{color:var(--dn)}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mu);font-size:12px;text-align:center}
+/* article */
+.art{max-width:820px;margin:0 auto}
+.back{color:var(--em2);font-size:14px;margin-bottom:18px;padding:8px 12px;border-radius:9px;background:var(--card)}
+.art h1{font-size:clamp(26px,5vw,40px);line-height:1.18;margin:14px 0}
+.art .ch{background:var(--card);border-radius:var(--r);padding:12px;margin:20px 0;height:260px;display:flex}
+.art p.b{line-height:1.75;color:#3b2a5c;margin-bottom:16px;font-size:16px}
+.rel{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+@media(max-width:600px){.rel{grid-template-columns:1fr}}
+.rel .nc{padding:14px}
+/* drawer */
+#drawer{position:fixed;top:0;right:0;bottom:0;width:min(340px,92vw);background:var(--bg2);border-left:1px solid var(--line);z-index:80;transform:translateX(105%);transition:transform .3s;padding:calc(20px + env(safe-area-inset-top,0px)) 20px 20px;overflow:auto}
+#drawer.open{transform:none}
+.wi{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--card);border-radius:10px;margin-top:10px;font-size:14px}
+.tk{cursor:pointer}
+#mk{position:fixed;inset:0;z-index:90;background:#f6efffd9;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) 16px max(16px,env(safe-area-inset-bottom,0px));opacity:0;animation:fade .25s forwards}
+.mkp{background:var(--card);border-radius:18px;padding:22px;width:min(860px,100%);max-height:100%;overflow:auto}
+.mkh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.mkh small,.mks small{display:block;color:var(--mu);font-size:11px;letter-spacing:.1em}
+.mkpx{font-size:clamp(24px,5vw,34px);font-weight:600;font-variant-numeric:tabular-nums}.mkpx span{font-size:15px}
+.mkt{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.mkc{height:min(340px,45vh);background:#ffffff;border-radius:12px;padding:10px}.mkc svg{width:100%;height:100%;display:block}
+.mks{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.mks>div{background:#ffffff;border-radius:10px;padding:12px;font-variant-numeric:tabular-nums}
+@media(max-width:560px){.mks{grid-template-columns:repeat(2,1fr)}.mkp{padding:16px}}
+[hidden]{display:none!important}
+.nc .more{margin-top:auto;padding-top:4px}
+.cv{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#ffffff;width:100%}.cv>img:first-child{width:100%;height:100%;object-fit:cover;display:block}.cv .lg{position:absolute;left:10px;bottom:10px;width:34px;height:34px;border-radius:8px;background:#fff;padding:4px;object-fit:contain}.art .ch .cv{height:100%;aspect-ratio:auto}.cv .chg{position:absolute;right:10px;top:10px;background:#ffffffcc;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600}.cv>svg{width:100%;height:100%;display:block}.nc .cv>svg{height:100%}
+@media(max-width:560px){.wrap{padding:0 16px}.hd{height:58px}.brand{font-size:15px;letter-spacing:.18em}.ib{padding:0 11px}.feat .tx{padding:20px}.feat .ch{min-height:190px}.tk{padding:13px}.tk .p{font-size:16px}.cats{margin:32px 0 16px}.cats h2{width:100%;font-size:20px}.chip{padding:7px 12px}.brief{padding:20px}.art .ch{height:210px}main{padding:20px 0 56px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body class="lock">
+<div id="intro" role="dialog" aria-label="MONVEX introduction">
+  <button class="skip glow" id="skip">Skip intro</button>
+  <div id="candles" aria-hidden="true"></div>
+  <div class="ic"><div class="halo"></div>
+    <div class="logo" aria-label="MONVEX"><span>M</span><span>O</span><span>N</span><span>V</span><span>E</span><span>X</span></div>
+    <div class="tag">MARKETS • MONEY • MOMENTUM</div></div>
+  <button class="scrollhint ic" id="hint" aria-label="Scroll to explore"><div class="mouse"></div>SCROLL TO EXPLORE<div class="chev"></div><div class="chev"></div></button>
+</div>
+
+<header>
+  <div class="wrap hd">
+    <div class="brand" id="home">MON<em>VEX</em></div>
+    <nav id="nav"></nav>
+    <div class="sp"></div>
+    <label class="sr glow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b5b8a" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" placeholder="Search news…" aria-label="Search news"></label>
+    <button class="ib glow wl" id="wlb">★ <span>Watchlist</span> <b id="wc">0</b></button>
+    <button class="ib glow burger" id="bg" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+<footer><div class="wrap">MONVEX — all prices, headlines and AI briefs are clearly labelled sample content, not live financial data or advice.</div></footer>
+<aside id="drawer" aria-label="Watchlist"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Watchlist</h3><button class="ib glow" id="wx">Close</button></div><div id="wlist"></div></aside>
+
+<script>
+const $=s=>document.querySelector(s);
+const CATS=["All","Markets","India","Crypto","Commodities","Tech"];
+const MK=[["SENSEX","74,892.40",0.62,1],["NIFTY 50","22,704.15",0.54,2],["S&P 500","5,318.20",-0.21,3],["NASDAQ","16,845.70",0.38,4],["GOLD","$2,364.10",-0.47,5],["BITCOIN","$68,210",1.84,6]];
+const P=(t)=>t.map(x=>"<p class='b'>"+esc(x)+"</p>");
+const NEWS=[
+{id:"story-1",cat:"Markets",t:"Global equities edge higher as investors weigh rate-cut timing",d:"19 Nov 2026",s:"Sample story: broad indices firm up while traders reassess the path of central bank policy and earnings momentum.",up:1,seed:11,b:["This is sample editorial content created for the MONVEX demo. Global equity benchmarks traded in a narrow, constructive range as participants balanced expectations on interest rates with a steady earnings backdrop.","Analysts in this fictional scenario note that breadth improved, with cyclical sectors outperforming defensives. Bond yields eased slightly, supporting valuations across growth names.","Looking ahead, the sample narrative highlights inflation prints and central bank commentary as the next catalysts. Nothing here is real market data or financial advice."]},
+{id:"story-2",cat:"India",t:"Sensex and Nifty extend gains led by banks and IT heavyweights",d:"19 Nov 2026",s:"Sample story: domestic benchmarks climb on steady institutional inflows and firm financials.",up:1,seed:22,b:["Sample content: Indian benchmarks advanced in a broad-based rally, with private banks and large IT names contributing most of the upside.","Mid-cap and small-cap indices also finished in the green, reflecting healthy risk appetite among domestic participants.","Market watchers in this illustrative piece suggest monitoring rupee movement and foreign flows in coming sessions."]},
+{id:"story-3",cat:"Crypto",t:"Bitcoin holds above key support as spot ETF flows stay positive",d:"18 Nov 2026",s:"Sample story: digital assets consolidate with volatility cooling after a sharp weekly move.",up:1,seed:33,b:["Sample content: Bitcoin consolidated in a tight band as sample ETF inflows offset profit-taking from short-term holders.","Large-cap altcoins followed with mixed performance, while derivatives funding rates normalised.","This fictional report does not reflect actual prices or flows."]},
+{id:"story-4",cat:"Commodities",t:"Gold slips from record zone as the dollar firms",d:"18 Nov 2026",s:"Sample story: bullion pulls back modestly; crude steadies on supply headlines.",up:0,seed:44,b:["Sample content: Gold eased as a firmer dollar and higher real yields weighed on demand for non-yielding assets.","Crude oil traded sideways in this scenario while industrial metals tracked sentiment on global manufacturing data.","Figures are illustrative only."]},
+{id:"story-5",cat:"Tech",t:"Chipmakers lead Nasdaq as AI infrastructure spending accelerates",d:"17 Nov 2026",s:"Sample story: semiconductor names drive tech indices amid strong data-centre demand.",up:1,seed:55,b:["Sample content: Semiconductor and cloud infrastructure names led technology benchmarks higher in this illustrative scenario.","Commentators point to capital expenditure guidance as a key driver, while valuation concerns linger.","This is not a real report."]},
+{id:"story-6",cat:"Markets",t:"Bond yields retreat after softer-than-expected inflation reading",d:"17 Nov 2026",s:"Sample story: Treasuries rally and the dollar loses ground as traders price in easier policy.",up:0,seed:66,b:["Sample content: A cooler inflation print pulled benchmark yields lower across the curve.","Equity futures reacted positively while the dollar index slipped against major peers.","All numbers here are fictional."]},
+{id:"story-7",cat:"India",t:"RBI commentary keeps rupee steady; banking stocks in focus",d:"16 Nov 2026",s:"Sample story: currency stability supports sentiment as lenders report healthy credit growth.",up:1,seed:77,b:["Sample content: The rupee traded in a narrow range as central bank commentary signalled comfort with liquidity conditions.","Lenders reported steady credit growth in this fictional overview.","Treat all content as demonstration material."]},
+{id:"story-8",cat:"Crypto",t:"Ethereum network upgrade chatter lifts developer activity metrics",d:"16 Nov 2026",s:"Sample story: on-chain activity rises ahead of a scheduled protocol milestone.",up:0,seed:88,b:["Sample content: Developer commits and layer-2 transactions rose in this illustrative scenario.","Price action remained choppy as traders balanced upgrade optimism against macro risk.","No real data is represented."]}
+];
+function rnd(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function line(seed,up,w=100,h=40,n=24){const r=rnd(seed);let v=50,pts=[];for(let i=0;i<n;i++){v+=(r()-.5)*14+(up?1.6:-1.6);pts.push(v)}
+ const mn=Math.min(...pts),mx=Math.max(...pts);const y=p=>h-3-(p-mn)/(mx-mn||1)*(h-6);
+ const d=pts.map((p,i)=>(i?"L":"M")+(i/(n-1)*w).toFixed(1)+" "+y(p).toFixed(1)).join(" ");
+ const c=up?"#22c55e":"#ef4444";
+ return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="g${seed}${w}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c}" stop-opacity=".3"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></linearGradient></defs><path d="${d} L${w} ${h} L0 ${h}Z" fill="url(#g${seed}${w})"/><path d="${d}" fill="none" stroke="${c}" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>`}
+function candle(seed,up){const r=rnd(seed),n=34,W=340,H=200;let v=100,o=[];for(let i=0;i<n;i++){const a=v;v+=(r()-.5)*10+(up?.9:-.9);o.push([a,v,Math.max(a,v)+r()*5,Math.min(a,v)-r()*5])}
+ const all=o.flat(),mn=Math.min(...all),mx=Math.max(...all),y=p=>H-10-(p-mn)/(mx-mn)*(H-20),s=W/n;
+ let g="";for(let i=1;i<5;i++)g+=`<line x1="0" x2="${W}" y1="${i*40}" y2="${i*40}" stroke="#e2d3fa"/>`;
+ o.forEach((c,i)=>{const x=i*s+s/2,col=c[1]>=c[0]?"#22c55e":"#ef4444",t=y(Math.max(c[0],c[1])),h=Math.max(2,Math.abs(y(c[0])-y(c[1])));g+=`<line x1="${x}" x2="${x}" y1="${y(c[2])}" y2="${y(c[3])}" stroke="${col}"/><rect x="${x-s*.3}" y="${t}" width="${s*.6}" height="${h}" fill="${col}" rx="1"/>`});
+ return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="Sample candlestick chart">${g}</svg>`}
+let cat="All",qs="",wl=[];try{wl=JSON.parse(localStorage.getItem("mvx-wl")||"[]")}catch(e){}
+const save=()=>{try{localStorage.setItem("mvx-wl",JSON.stringify(wl))}catch(e){}};
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function card(n){return `<article class="nc glow" tabindex="0" data-id="${n.id}">${vis(n)}<div class="meta"><span class="tg">${n.cat}</span>${tm(n)}</div><h4>${esc(n.t)}</h4><p class="sm">${esc(n.s)}</p><span class="more">Read more →</span></article>`}
+const NEWS_URL="news.json",BF_ID="";
+const tm=n=>n.published?new Date(n.published).toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):n.d;
+const vis=n=>n.motif?`<div class="cv">${cov(n)}${n.change?`<span class="chg ${n.change[0]=="-"?"dn":"up"}">${esc(n.change)}</span>`:""}</div>`:n.img?`<div class="cv"><img src="${esc(n.img)}" alt="" loading="lazy">${n.logo&&BF_ID?`<img class="lg" src="https://cdn.brandfetch.io/domain/${encodeURIComponent(n.logo)}?c=${BF_ID}" alt="" loading="lazy" onerror="this.remove()">`:""}${n.change?`<span class="chg ${n.change[0]=="-"?"dn":"up"}">${esc(n.change)}</span>`:""}</div>`:line(n.seed,n.up,100,40);
+function filtered(){const k=qs.toLowerCase();return NEWS.filter(n=>(cat=="All"||n.cat==cat)&&(!k||(n.t+n.s+n.cat).toLowerCase().includes(k))).sort((a,b)=>new Date(b.published||0)-new Date(a.published||0))}
+function home(loading){
+ const tk=MK.map(m=>{const u=m[2]>=0;return `<div class="tk glow" tabindex="0" data-m="${m[0]}" title="Open ${m[0]} chart"><button class="star ${wl.includes(m[0])?"on":""}" data-w="${m[0]}" aria-label="Toggle watchlist ${m[0]}">${wl.includes(m[0])?"★":"☆"}</button><small>${m[0]}</small><div class="p">${m[1]}</div><div class="c ${u?"up":"dn"}">${u?"▲":"▼"} ${Math.abs(m[2]).toFixed(2)}%</div>${line(m[3]*7,u,100,30,20)}</div>`}).join("");
+ const list=filtered(),f=list[0],rest=list.slice(1);
+ let body;
+ if(loading)body=`<div class="grid"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>`;
+ else if(!list.length)body=`<div class="grid"><div class="empty">No stories match your search.</div></div>`;
+ else body=`<section class="feat glow" data-id="${f.id}" tabindex="0"><div class="tx"><div class="meta"><span class="tg">${f.cat}</span>${tm(f)} · Featured${f.source?" · AI summary":" · Sample"}</div><h3>${esc(f.t)}</h3><p class="sm">${esc(f.s)}</p><span class="more">Read full story →</span></div><div class="ch">${(f.img||f.motif)?vis(f):candle(f.seed,f.up)}</div></section><div class="grid">${rest.map(card).join("")}</div>`;
+ $("#app").innerHTML=`<div class="tick">${tk}</div><p class="note">Sample data for demonstration only — not live prices.</p>
+ <div class="cats" id="news"><h2>Latest news</h2>${CATS.map(c=>`<button class="chip ${c==cat?"on":""}" data-c="${c}">${c}</button>`).join("")}</div>${body}
+ <section class="brief glow" id="brief"><h2>AI Market Brief <span class="lab">SAMPLE CONTENT · NOT LIVE</span></h2><p class="sm" style="margin-top:10px">Illustrative daily summary: equities finished mixed as technology outperformed while commodities consolidated. Yields eased modestly and risk appetite stayed constructive.</p>
+ <div class="bg"><div class="bx"><h5>KEY MOVEMENTS</h5><ul><li>Indian benchmarks advance on banking strength</li><li>Semiconductors lead tech higher</li><li>Gold pulls back as the dollar firms</li></ul></div><div class="bx"><h5>KEY DEVELOPMENTS</h5><ul><li>Softer inflation reading reshapes rate expectations</li><li>Spot ETF flows remain supportive for crypto</li><li>Central bank commentary in focus this week</li></ul></div>
+ <div class="bx bull"><h5>▲ BULLISH OBSERVATIONS</h5><ul><li>Improving market breadth across sectors</li><li>Falling yields support growth valuations</li></ul></div><div class="bx bear"><h5>▼ BEARISH OBSERVATIONS</h5><ul><li>Stretched valuations in AI-linked names</li><li>Dollar strength could pressure commodities</li></ul></div></div></section>`;
+ wc()}
+function article(id){const n=NEWS.find(x=>x.id==id);if(!n)return home();
+ const rel=NEWS.filter(x=>x.id!=id).sort((a,b)=>(b.cat==n.cat)-(a.cat==n.cat)).slice(0,2);
+ $("#app").innerHTML=`<div class="art"><button class="back glow" id="bk">← Back to news</button><div class="meta"><span class="tg">${n.cat}</span>${tm(n)}${n.source?" · AI-generated summary":" · Sample article"}</div><h1>${esc(n.t)}</h1><p class="sm">${esc(n.s)}</p><div class="ch glow">${(n.img||n.motif)?vis(n):candle(n.seed+3,n.up)}</div>${P(n.b).join("")}${n.source?`<p class="sm">Source: <a href="${esc(n.source.url)}" target="_blank" rel="noopener" style="color:var(--em2)">${esc(n.source.name)}</a> · Summary and cover image are AI-generated.</p>`:""}<h3 style="margin:28px 0 4px">Related news</h3><div class="rel">${rel.map(card).join("")}</div></div>`;scrollTo(0,0)}
+function wc(){$("#wc").textContent=wl.length;$("#wlist").innerHTML=wl.length?wl.map(w=>{const m=MK.find(x=>x[0]==w);return `<div class="wi"><div><b>${w}</b><div class="sm">${m[1]}</div></div><span class="${m[2]>=0?"up":"dn"}">${m[2]>=0?"+":""}${m[2].toFixed(2)}%</span><button data-w="${w}" class="chip">Remove</button></div>`}).join(""):`<p class="sm" style="margin-top:14px">Star a market card to add it here.</p>`}
+let booted=0;function route(){const h=location.hash.slice(1);if(h.startsWith("story-"))article(h);else if(!booted){booted=1;home(false)}else{home(true);setTimeout(()=>home(false),350)}}
+function setCat(c){cat=c;home(true);setTimeout(()=>home(false),300);document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.c==c))}
+$("#nav").innerHTML=["Markets","News","India","Crypto","Commodities","Tech"].map(c=>`<button data-c="${c}">${c}</button>`).join("");
+document.addEventListener("click",e=>{
+ const w=e.target.closest("[data-w]");if(w){const k=w.dataset.w;wl=wl.includes(k)?wl.filter(x=>x!=k):[...wl,k];save();if(!location.hash.startsWith("#story"))home(false);else wc();return}
+ const mk=e.target.closest(".tk[data-m]");if(mk){openMk(mk.dataset.m);return}
+ const nb=e.target.closest("#nav button");if(nb){$("#nav").classList.remove("open");const c=nb.dataset.c=="News"?"All":nb.dataset.c;if(location.hash){history.pushState(null,"",location.pathname+location.search)}setCat(c);setTimeout(()=>$("#news")&&$("#news").scrollIntoView(),50);return}
+ const ch=e.target.closest(".chip[data-c]");if(ch){setCat(ch.dataset.c);return}
+ const nc=e.target.closest("[data-id]");if(nc){location.hash=nc.dataset.id;return}
+ if(e.target.closest("#bk")){history.back();if(!location.hash)route();return}
+ if(e.target.closest("#home")){location.hash="";cat="All";qs="";$("#q").value="";route();scrollTo(0,0)}
+});
+document.addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.dataset&&e.target.dataset.id)location.hash=e.target.dataset.id;if(e.key=="Enter"&&e.target.dataset&&e.target.dataset.m)openMk(e.target.dataset.m)});
+$("#q").addEventListener("input",e=>{qs=e.target.value.trim();if(location.hash){history.replaceState(null,"",location.pathname+location.search)}home(false)});
+$("#bg").onclick=()=>$("#nav").classList.toggle("open");
+$("#wlb").onclick=()=>$("#drawer").classList.add("open");$("#wx").onclick=()=>$("#drawer").classList.remove("open");
+addEventListener("hashchange",route);
+function cov(n){const r=rnd(n.seed),c=n.up?"#22c55e":"#ef4444",k=n.up?"#ef4444":"#22c55e",id="g"+n.seed;let b="";for(let i=0;i<16;i++){const x=12+i*19,y=(n.up?135-i*4.5:72+i*4.5)+(r()-.5)*16,h=12+r()*22,o=r()>.3?c:k;b+=`<line x1="${x+4}" x2="${x+4}" y1="${y-8}" y2="${y+h+8}" stroke="${o}" stroke-opacity=".7"/><rect x="${x}" y="${y}" width="8" height="${h}" rx="1.5" fill="${o}" fill-opacity=".85"/>`}
+const M={chip:"<rect x='40' y='34' width='36' height='36' rx='5'/><rect x='50' y='44' width='16' height='16'/><path d='M48 28v6M58 28v6M68 28v6M48 70v6M58 70v6M68 70v6M34 44h6M34 54h6M34 64h6M76 44h6M76 54h6M76 64h6'/>",coin:"<circle cx='58' cy='52' r='26'/><circle cx='58' cy='52' r='19'/><path d='M52 42v20M52 42h8a5 5 0 0 1 0 10h-8M52 52h9a5 5 0 0 1 0 10h-9'/>",bank:"<path d='M28 44L58 26l30 18zM36 50v22M50 50v22M66 50v22M80 50v22M30 76h56'/>",gold:"<path d='M30 76l6-14h22l6 14zM58 76l6-14h22l6 14zM44 62l6-14h22l6 14z'/>",chart:"<path d='M30 28v48h58M38 66l14-16 12 8 20-26'/>"};
+return `<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" role="img" aria-label="AI-drawn cover illustration"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0e0620"/><stop offset="1" stop-color="${n.up?"#2a1060":"#3a0d2e"}"/></linearGradient></defs><rect width="320" height="180" fill="url(#${id})"/><g stroke="#ffffff0d">${[45,90,135].map(y=>`<line x1="0" x2="320" y1="${y}" y2="${y}"/>`).join("")}</g>${b}<g fill="none" stroke="#f5f0ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity=".9">${M[n.motif]||""}</g></svg>`}
+/* Real stories, paraphrased and attributed; snapshot gathered 20 Nov 2026 from the linked sources. */
+const LIVE=[
+{id:"story-corr-1120",cat:"Markets",t:"Nasdaq slips into a correction as the Dow edges toward one",d:"20 Nov 2026",published:"2026-11-20T00:31:00Z",up:0,seed:88,motif:"chart",s:"After Thursday’s sell-off the Nasdaq Composite is in a correction, a fall of 10% or more from a record close, according to Nacionale News. The Dow closed at 49,097.06, about 9.7% below its August record and roughly 183 points from correction territory, while the S&P 500 is 8.2% off its high.",source:{name:"Nacionale News",url:"https://www.nacionale.com/en/articles/is-stock-market-in-correction-dow-sp-500-nasdaq-how-far-from-record-november-19"}},
+{id:"story-dow-1119",cat:"Markets",t:"Dow plunges 1,101 points as the sell-off spreads beyond AI stocks",d:"19 Nov 2026",published:"2026-11-19T21:00:00Z",up:0,seed:77,motif:"chart",change:"-2.19%",s:"US stocks fell hard on Thursday as investors sold AI and chip shares and then almost everything else, with analysts saying no single event set it off. The Dow closed down 1,101.11 points, or 2.19%, at 49,097.06, the S&P 500 lost 2.02% to 7,175.83 for a sixth straight decline, and the Nasdaq Composite dropped 2.25% to 23,879.20.",source:{name:"Nacionale News",url:"https://www.nacionale.com/en/articles/why-is-stock-market-down-today-november-19-dow-1100-points-ai-stocks-anthropic-ipo"}},
+{id:"story-nvda-1118",cat:"Tech",t:"Nvidia gives up its post-earnings gain as the Dow drops 561 points",d:"18 Nov 2026",published:"2026-11-18T21:00:00Z",up:0,seed:99,motif:"chip",change:"-2.89%",s:"Nvidia reversed its initial post-earnings gains on Wednesday and closed down 2.89%, according to a Vistap Global market report. The Dow fell 561.25 points, or 1.11%, to 50,198.17 and the S&P 500 lost 0.23% for a fifth straight decline, while the Nasdaq Composite gained 0.42%.",source:{name:"Vistap Global",url:"https://vistapglobal.com/u-s-stock-market-today-november-18-2026-dow-falls-561-points-nasdaq-rises-ahead-of-anthropic-ipo-ant-eprx-googl-modd-nvda-ser-tgt/"}},
+{id:"story-fed-1118",cat:"Markets",t:"Fed minutes show officials leaning toward more rate rises",d:"18 Nov 2026",published:"2026-11-18T19:00:00Z",up:0,seed:12,motif:"bank",s:"Minutes from the Federal Reserve’s most recent meeting showed almost all officials judged more rate rises would likely be appropriate, according to live market coverage on 18 November. The Dow extended its losses after the release and closed 561.25 points lower.",source:{name:"Stock Titan",url:"https://www.stocktitan.net/articles/stock-market-today-live-november-18-2026"}},
+{id:"story-ap-1117",cat:"Markets",t:"Wall Street slides again as Nvidia and AI stocks lead the decline",d:"17 Nov 2026",published:"2026-11-17T21:00:00Z",up:0,seed:11,motif:"chart",change:"-1%",s:"US stocks fell again on Tuesday as Nvidia and other jittery AI shares led losses. The S&P 500 sank 1% after swinging between almost no change and a 1.7% loss, the Dow dropped 1.6% and the Nasdaq composite slipped 0.7% in another unsettled session.",source:{name:"AP via La Nación",url:"https://www.lanacion.com.ar/usa/how-major-us-stock-indexes-fared-tuesday-11172026-nid17112026/"}},
+{id:"story-btc-1117",cat:"Crypto",t:"Bitcoin steadies near $65,000 after a steep November slide",d:"17 Nov 2026",published:"2026-11-17T13:15:00Z",up:1,seed:22,motif:"coin",s:"Bitcoin traded near $65,017 at 8:15 a.m. ET on 17 November, about $1,004 above the previous morning, according to Fortune’s daily price tracker. The coin was priced near $73,938 on 11 November, so it remains well below early-November levels.",source:{name:"Fortune",url:"https://fortune.com/article/price-of-bitcoin-11-17-2026/"}},
+{id:"story-in-1117",cat:"India",t:"Sensex and Nifty keep climbing as investors rotate into India",d:"17 Nov 2026",published:"2026-11-17T10:00:00Z",up:1,seed:33,motif:"bank",s:"Indian equities extended their climb on 17 November, with the Sensex and Nifty closing higher. Market reports pointed to lower crude prices, strong foreign investor buying and a rotation of money from global AI stocks into Indian shares. Both benchmarks had also gained more than half a per cent on Monday.",source:{name:"HDFC SKY",url:"https://hdfcsky.com/news/market-close-report-today-november-17-2026-nifty-sensex-continue-climb-as-investors-dump-global-ai-stocks-for-india"}},
+{id:"story-nv-1112",cat:"Tech",t:"Nvidia shares drop after CEO Jensen Huang resigns",d:"12 Nov 2026",published:"2026-11-12T21:00:00Z",up:0,seed:44,motif:"chip",s:"US stocks ended a volatile Thursday session slightly lower after Nvidia shares fell following CEO Jensen Huang’s resignation, Reuters reported. The major indexes traded on both sides of unchanged, a semiconductor index lost 0.5% and US Treasury yields climbed.",source:{name:"Reuters via New Straits Times",url:"https://www.nst.com.my/amp/business/corporate/2026/11/1576568/wall-street-ends-lower-nvidia-ceo-resigns-us-yields"}},
+{id:"story-au-1112",cat:"Commodities",t:"Gold tumbles 2.8% as the dollar hits a 19-month high",d:"12 Nov 2026",published:"2026-11-12T20:55:00Z",up:0,seed:55,motif:"gold",change:"-2.77%",s:"Spot gold fell 2.77% to $3,877.04 an ounce on Thursday, Reuters reported, as the US dollar index reached a fresh 19-month high on rate-hike expectations. Brent crude settled at $95.82 a barrel, up 3.3%, while US West Texas Intermediate closed at $88.74, up 2.6%.",source:{name:"Reuters via New Straits Times",url:"https://www.nst.com.my/amp/business/corporate/2026/11/1576568/wall-street-ends-lower-nvidia-ceo-resigns-us-yields"}},
+{id:"story-rl-1111",cat:"Markets",t:"Dow and Nasdaq rally as investors return to tech",d:"11 Nov 2026",published:"2026-11-11T21:00:00Z",up:1,seed:66,motif:"chart",s:"US stocks rose on 11 November as investors returned to a volatile technology sector. Reuters reported the Dow gained 254.60 points to 52,486.49, the S&P 500 added 98.45 points to 7,619.38 and the Nasdaq Composite rose 400.31 points to 25,466.19.",source:{name:"Reuters via Newcastle Herald",url:"https://www.newcastleherald.com.au/story/9390211/stocks-end-higher-as-sp-500-nasdaq-rally/"}}
+];
+LIVE.forEach(n=>n.b=[n.s]);NEWS.splice(0,NEWS.length,...LIVE);
+fetch(NEWS_URL,{cache:"no-cache"}).then(r=>r.ok?r.json():[]).then(a=>{if(!Array.isArray(a)||!a.length)return;NEWS.splice(0,NEWS.length,...a);const h=location.hash;if(h.startsWith("#story-"))article(h.slice(1));else home(false)}).catch(()=>{});
+function openMk(name){const m=MK.find(x=>x[0]==name);if(!m)return;let rg="1M",ty="line";const u=m[2]>=0,p=parseFloat(m[1].replace(/[^0-9.]/g,"")),pre=m[1].startsWith("$")?"$":"",pv=p/(1+m[2]/100),f=v=>pre+v.toLocaleString("en-US",{maximumFractionDigits:2}),N={"1D":48,"1W":40,"1M":30,"1Y":60};
+const el=document.createElement("div");el.id="mk";el.setAttribute("role","dialog");el.setAttribute("aria-label",name+" chart");
+const draw=()=>{const sd=m[3]*13+rg.charCodeAt(1)*7+rg.length;el.innerHTML=`<div class="mkp glow"><div class="mkh"><div><small>${name}</small><div class="mkpx">${m[1]} <span class="${u?"up":"dn"}">${u?"▲":"▼"} ${Math.abs(m[2]).toFixed(2)}%</span></div></div><button class="ib glow" id="mkx">Close ✕</button></div><div class="mkt">${["1D","1W","1M","1Y"].map(r=>`<button class="chip ${r==rg?"on":""}" data-r="${r}">${r}</button>`).join("")}<span style="flex:1"></span>${["line","candles"].map(t=>`<button class="chip ${t==ty?"on":""}" data-t="${t}">${t[0].toUpperCase()+t.slice(1)}</button>`).join("")}</div><div class="mkc">${ty=="line"?line(sd,u,100,40,N[rg]):candle(sd,u)}</div><div class="mks"><div><small>PREV CLOSE</small>${f(pv)}</div><div><small>DAY HIGH</small>${f(Math.max(p,pv)*1.004)}</div><div><small>DAY LOW</small>${f(Math.min(p,pv)*.996)}</div><div><small>CHANGE</small><span class="${u?"up":"dn"}">${f(p-pv)}</span></div></div><p class="note">Sample data for demonstration only — not live prices. The chart shape is illustrative.</p></div>`};
+const close=()=>{el.remove();document.removeEventListener("keydown",esc2)},esc2=e=>{if(e.key=="Escape")close()};
+el.addEventListener("click",e=>{const t=e.target;if(t===el||t.id=="mkx")return close();const r=t.closest("[data-r]");if(r){rg=r.dataset.r;draw();return}const c=t.closest("[data-t]");if(c){ty=c.dataset.t;draw()}});
+document.addEventListener("keydown",esc2);draw();document.body.appendChild(el);el.querySelector("#mkx").focus()}
+/* intro */
+const intro=$("#intro"),cd=$("#candles");let entered=false;
+(function(){const r=rnd(9),n=52;let h="",top=0;for(let i=0;i<n;i++){const g=r()>.38,L=(2+i*96/n).toFixed(2),B=12+i*.85+(r()-.5)*5,H=2+r()*6,c=g?"#22c55e":"#ef4444",d=(i*.024).toFixed(2);top=B+H;h+=`<div class="cd" style="left:${L}%;bottom:${B.toFixed(1)}vh;height:${H.toFixed(1)}vh;color:${c};animation-delay:${d}s"><i></i><b></b></div><div class="vb" style="left:${L}%;height:${(1+r()*5).toFixed(1)}vh;color:${c};animation-delay:${d}s"></div>`}h+=`<div class="lp" style="bottom:${top.toFixed(1)}vh"><span>SAMPLE ▲ 2.84%</span></div>`;cd.innerHTML=h})();
+function enter(fast){if(entered)return;entered=true;
+ if(fast||matchMedia("(prefers-reduced-motion: reduce)").matches){intro.remove();document.body.classList.remove("lock");return}
+ document.body.classList.add("rev");intro.classList.add("go");setTimeout(()=>{intro.remove();document.body.classList.remove("lock","rev")},2500)}
+addEventListener("wheel",e=>{if(e.deltaY>0)enter()},{passive:true});
+let ty=null;addEventListener("touchstart",e=>ty=e.touches[0].clientY,{passive:true});
+addEventListener("touchmove",e=>{if(ty!==null&&ty-e.touches[0].clientY>24)enter()},{passive:true});
+addEventListener("keydown",e=>{if(["ArrowDown","PageDown"," ","Enter"].includes(e.key)&&!entered&&e.target.tagName!="INPUT")enter()});
+$("#hint").onclick=()=>enter();$("#skip").onclick=e=>{e.stopPropagation();enter(true)};
+if(matchMedia("(prefers-reduced-motion: reduce)").matches)enter(true);
+if(location.hash.startsWith("#story-"))enter(true);
+route();
+</script>
+</body>
+</html>

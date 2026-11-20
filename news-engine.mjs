@@ -1,0 +1,139 @@
+// MONVEX AI news engine — Node 20+, zero npm packages, free-tier services only.
+//   Headlines/summaries : Google Gemini API free tier   (GEMINI_API_KEY)
+//   News source         : public RSS feeds              (no key)
+//   Cover images        : Cloudflare Workers AI FLUX    (CF_ACCOUNT_ID, CF_API_TOKEN) — optional
+//   Company logos       : Brandfetch Logo API           (client ID is public, used in the website, not here)
+// Output: docs/news.json + docs/covers/*.jpg  (served by GitHub Pages next to the website).
+
+import { readFile, writeFile, mkdir, unlink } from "node:fs/promises";
+import { createHash } from "node:crypto";
+
+const { GEMINI_API_KEY, CF_ACCOUNT_ID, CF_API_TOKEN } = process.env;
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
+const MAX_NEW = +(process.env.MAX_NEW || 4), KEEP = 60, OUT = "./docs", DB = OUT + "/news.json", COVERS = OUT + "/covers";
+const CATS = ["Markets", "India", "Crypto", "Commodities", "Tech"];
+const MOTIF = { Markets: "chart", India: "bank", Crypto: "coin", Commodities: "gold", Tech: "chip" };
+const FEEDS = [ // a dead feed is skipped, not fatal. Check URLs in a browser if one stops producing news.
+  ["CNBC", "https://www.cnbc.com/id/100003114/device/rss/rss.html"],
+  ["MarketWatch", "https://feeds.marketwatch.com/marketwatch/topstories"],
+  ["Yahoo Finance", "https://finance.yahoo.com/news/rssindex"],
+  ["Bloomberg Markets", "https://feeds.bloomberg.com/markets/news.rss"],
+  ["CoinDesk", "https://www.coindesk.com/arc/outboundfeeds/rss/"],
+  ["Cointelegraph", "https://cointelegraph.com/rss"],
+  ["Economic Times", "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms"],
+];
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const sha = s => createHash("sha256").update(s).digest("hex").slice(0, 12);
+const norm = s => s.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, " ").trim();
+const wc = s => s.trim().split(/\s+/).length;
+const toks = t => new Set(norm(t).split(" ").filter(w => w.length > 3));
+const similar = (a, b) => { const x = toks(a), y = toks(b); let i = 0; x.forEach(w => y.has(w) && i++); return i / Math.max(1, Math.min(x.size, y.size)) >= 0.7; };
+const load = async () => { try { return JSON.parse(await readFile(DB, "utf8")); } catch { return []; } };
+const exists = async f => { try { await readFile(f); return true; } catch { return false; } };
+
+// ---- RSS (tiny parser) ----
+const clean = s => s.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#0?39;|&apos;/g, "'").replace(/\s+/g, " ").trim();
+const tag = (x, t) => { const m = x.match(new RegExp(`<${t}[^>]*>([\\s\\S]*?)</${t}>`, "i")); return m ? clean(m[1]) : ""; };
+async function readFeed([src, url]) {
+  try {
+    const r = await fetch(url, { headers: { "user-agent": "MONVEX-news/1.0" }, signal: AbortSignal.timeout(15000) });
+    if (!r.ok) throw new Error(r.status);
+    const xml = await r.text();
+    return [...xml.matchAll(/<item[\s>][\s\S]*?<\/item>/gi)].slice(0, 10).map(m => ({
+      src, title: tag(m[0], "title"), link: tag(m[0], "link"), desc: tag(m[0], "description"), date: tag(m[0], "pubDate"),
+    })).filter(a => /^https?:\/\/[^\s"<>]+$/.test(a.link) && a.title);
+  } catch (e) { console.error("Feed failed:", src, e.message); return []; }
+}
+
+// ---- Gemini (free tier) ----
+async function gemini(prompt) {
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
+    method: "POST",
+    headers: { "x-goog-api-key": GEMINI_API_KEY, "content-type": "application/json" },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.2 } }),
+  });
+  if (r.status === 429) throw Object.assign(new Error("Gemini free-tier limit reached"), { quota: true });
+  if (!r.ok) throw new Error("Gemini " + r.status);
+  return (await r.json()).candidates?.[0]?.content?.parts?.map(p => p.text || "").join("") || "";
+}
+
+// RSS gives only a short snippet, so length adapts: 80-120 words only when the source has enough text.
+// A shorter validated summary is better than a padded one that invents facts.
+async function rewrite(a) {
+  const src = `${a.title}. ${a.desc}`, sw = wc(src);
+  const [lo, hi] = sw >= 100 ? [80, 120] : [25, Math.min(60, Math.max(30, Math.round(sw * 1.5)))];
+  let note = "";
+  for (let i = 0; i < 2; i++) {
+    const out = await gemini(`You are a financial news editor. Using ONLY the source text below, return JSON:
+{"headline":"clear professional headline","summary":"${lo}-${hi} words","category":"${CATS.join("|")}","sentiment":"up|down","company":{"name":"","domain":""} or null,"scene":"one concrete visual scene directly related to this story's subject (e.g. servers for an outage, chips for semiconductors, coins for crypto), no text, no logos, no real people","change":"the percent move exactly as written in the source, e.g. -2%, else empty string"}
+Never add, infer, or change any fact, number, name or date. Use "company" only if one company is clearly the subject and you are certain of its official website domain. ${note}
+SOURCE: ${src}`);
+    try {
+      const j = JSON.parse(out.replace(/```json|```/g, "").trim()), n = wc(j.summary);
+      const bad = (`${j.headline} ${j.summary}`.match(/\d[\d,.]*\d|\d/g) || []).filter(x => !src.includes(x.replace(/[.,]$/, "")));
+      if (n >= lo && n <= hi && !bad.length && CATS.includes(j.category)) { j.change = /^[+-]?\d+(\.\d+)?%$/.test(j.change || "") && src.includes(j.change.replace(/^[+-]/, "")) ? j.change : ""; return j; }
+      note = `Previous attempt failed (${n} words; numbers not in source: ${bad.join(",") || "none"}). Fix it.`;
+    } catch { note = "Previous output was not valid JSON."; }
+  }
+  return null; // unvalidated -> not published
+}
+
+// Only keep a logo domain if the company is named in the source and the domain plausibly matches its name.
+// The website hotlinks the logo from Brandfetch (their terms forbid storing logos), so nothing is saved here.
+function logoDomain(c, src) {
+  if (!c || !c.name || !/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(c.domain || "")) return null;
+  const n = norm(c.name).replace(/ /g, ""), d = c.domain.toLowerCase().split(".").slice(-2)[0];
+  if (!src.toLowerCase().includes(c.name.toLowerCase())) return null;
+  return n.includes(d) || d.includes(norm(c.name).split(" ")[0]) ? c.domain.toLowerCase() : null;
+}
+
+// ---- Cover image (Cloudflare Workers AI, FLUX.1 schnell, free daily allowance) ----
+async function cover(id, scene, dir) {
+  if (!CF_ACCOUNT_ID || !CF_API_TOKEN) return null;
+  const rel = `covers/${id}.jpg`, f = `${OUT}/${rel}`;
+  if (await exists(f)) return rel; // never regenerate
+  try {
+    const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell`, {
+      method: "POST", headers: { Authorization: `Bearer ${CF_API_TOKEN}`, "content-type": "application/json" },
+      body: JSON.stringify({ prompt: `${scene}. ${dir === "down" ? "Falling red candlestick bars" : "Rising green candlestick bars"} on a dark trading screen in the scene. Photorealistic editorial financial photograph, cinematic dark emerald tones, wide composition. No text, no letters, no logos, no brand marks, no people.`, steps: 4 }),
+    });
+    const b64 = (await r.json())?.result?.image;
+    if (!r.ok || !b64) throw new Error("status " + r.status);
+    await mkdir(COVERS, { recursive: true });
+    await writeFile(f, Buffer.from(b64, "base64"));
+    return rel;
+  } catch (e) { console.error("Cover skipped:", e.message); return null; } // article still publishes, site shows its chart
+}
+
+async function run() {
+  if (!GEMINI_API_KEY) { console.error("Missing GEMINI_API_KEY"); process.exit(1); }
+  let db = await load(), added = 0;
+  const lists = await Promise.all(FEEDS.map(readFeed)), items = [];
+  for (let i = 0; items.length < 80 && lists.some(l => l[i]); i++) lists.forEach(l => l[i] && items.push(l[i])); // round-robin
+  for (const a of items) {
+    if (added >= MAX_NEW) break;
+    const t = Date.parse(a.date), id = "story-" + sha(a.link.split("?")[0]);
+    if (t && Date.now() - t > 3 * 864e5) continue;
+    if (db.some(x => x.id === id || similar(x.sourceTitle, a.title))) continue; // duplicate
+    try {
+      const j = await rewrite(a);
+      await sleep(5000); // stay well inside free-tier per-minute limits
+      if (!j) continue;
+      const img = await cover(id, j.scene, j.sentiment);
+      db.unshift({
+        id, cat: j.category, t: j.headline, s: j.summary, b: [j.summary],
+        d: new Date(t || Date.now()).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+        up: j.sentiment === "up" ? 1 : 0, change: j.change || "", motif: img ? undefined : MOTIF[j.category], seed: parseInt(id.slice(6, 10), 16), img,
+        logo: logoDomain(j.company, `${a.title}. ${a.desc}`), source: { name: a.src, url: a.link }, sourceTitle: a.title, published: new Date(t || Date.now()).toISOString(),
+      });
+      added++;
+    } catch (e) { console.error("Skipped:", a.title, "-", e.message); if (e.quota) break; }
+  }
+  for (const old of db.slice(KEEP)) if (old.img) await unlink(`${OUT}/${old.img}`).catch(() => {});
+  db = db.slice(0, KEEP);
+  await mkdir(OUT, { recursive: true });
+  await writeFile(DB, JSON.stringify(db));
+  console.log(`Added ${added}. Total ${db.length}.`);
+}
+run();
