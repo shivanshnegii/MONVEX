@@ -12,6 +12,8 @@ const { GEMINI_API_KEY, CF_ACCOUNT_ID, CF_API_TOKEN } = process.env;
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 const MAX_NEW = +(process.env.MAX_NEW || 3), KEEP = 60, OUT = "./docs", DB = OUT + "/news.json", COVERS = OUT + "/covers";
 const CATS = ["Markets", "India", "Crypto", "Commodities", "Tech"];
+const MAX_IMG = +(process.env.MAX_IMG || 4);
+let imgFail = false; // stop wasting time if the image service says no
 const MOTIF = { Markets: "chart", India: "bank", Crypto: "coin", Commodities: "gold", Tech: "chip" };
 const FEEDS = [ // a dead feed is skipped, not fatal. Check URLs in a browser if one stops producing news.
   ["CNBC", "https://www.cnbc.com/id/100003114/device/rss/rss.html"],
@@ -74,7 +76,7 @@ async function rewrite(a) {
   let note = "";
   for (let i = 0; i < 2; i++) {
     const out = await gemini(`You are a financial news editor. Using ONLY the source text below, return JSON:
-{"headline":"clear professional headline","summary":"${lo}-${hi} words","category":"${CATS.join("|")}","sentiment":"up|down","company":{"name":"","domain":""} or null,"scene":"one concrete visual scene directly related to this story's subject (e.g. servers for an outage, chips for semiconductors, coins for crypto), no text, no logos, no real people","change":"the percent move exactly as written in the source, e.g. -2%, else empty string"}
+{"headline":"clear professional headline","summary":"${lo}-${hi} words","category":"${CATS.join("|")}","sentiment":"up|down","company":{"name":"","domain":""} or null,"scene":"a distinct, concrete real-world scene specific to THIS story, as a news photographer would shoot it (e.g. a container port for trade news, an oil refinery for crude, a data centre for AI chips, a bank building for rates); no charts, no screens, no text, no logos, no people","change":"the percent move exactly as written in the source, e.g. -2%, else empty string"}
 Never add, infer, or change any fact, number, name or date. Use "company" only if one company is clearly the subject and you are certain of its official website domain. ${note}
 SOURCE: ${src}`);
     try {
@@ -99,20 +101,20 @@ function logoDomain(c, src) {
 
 // ---- Cover image (Cloudflare Workers AI, FLUX.1 schnell, free daily allowance) ----
 async function cover(id, scene, dir) {
-  if (!CF_ACCOUNT_ID || !CF_API_TOKEN) return null;
+  if (imgFail || !CF_ACCOUNT_ID || !CF_API_TOKEN) return null;
   const rel = `covers/${id}.jpg`, f = `${OUT}/${rel}`;
   if (await exists(f)) return rel; // never regenerate
   try {
     const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell`, {
       method: "POST", headers: { Authorization: `Bearer ${CF_API_TOKEN}`, "content-type": "application/json" },
-      body: JSON.stringify({ prompt: `${scene}. ${dir === "down" ? "Falling red candlestick bars" : "Rising green candlestick bars"} on a dark trading screen in the scene. Photorealistic editorial financial photograph, cinematic dark emerald tones, wide composition. No text, no letters, no logos, no brand marks, no people.`, steps: 4 }),
+      body: JSON.stringify({ prompt: `${scene}. ${dir === "down" ? "Somber, moody lighting." : "Bright, optimistic lighting."} Photorealistic editorial news photograph, wide composition. No text, no letters, no logos, no brand marks, no charts, no people.`, steps: 4 }),
     });
     const b64 = (await r.json())?.result?.image;
     if (!r.ok || !b64) throw new Error("status " + r.status);
     await mkdir(COVERS, { recursive: true });
     await writeFile(f, Buffer.from(b64, "base64"));
     return rel;
-  } catch (e) { console.error("Cover skipped:", e.message); return null; } // article still publishes, site shows its chart
+  } catch (e) { console.error("Cover skipped:", e.message); imgFail = true; return null; } // article still publishes, site shows its chart
 }
 
 // ---- Market prices + charts (Yahoo Finance chart endpoint: free, no key, unofficial -> may change) ----
@@ -167,11 +169,21 @@ async function run() {
       db.unshift({
         id, cat: j.category, t: j.headline, s: j.summary, b: [j.summary],
         d: new Date(t || Date.now()).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
-        up: j.sentiment === "up" ? 1 : 0, change: j.change || "", motif: img ? undefined : MOTIF[j.category], seed: parseInt(id.slice(6, 10), 16), img,
+        up: j.sentiment === "up" ? 1 : 0, change: j.change || "", scene: j.scene, motif: img ? undefined : MOTIF[j.category], seed: parseInt(id.slice(6, 10), 16), img,
         logo: logoDomain(j.company, `${a.title}. ${a.desc}`), source: { name: a.src, url: a.link }, sourceTitle: a.title, published: new Date(t || Date.now()).toISOString(),
       });
       added++;
     } catch (e) { console.error("Skipped:", a.title, "-", e.message); if (e.quota || e.fatal) break; }
+  }
+  // Give a real AI cover to stories that still show the drawn placeholder (a few per run)
+  let imgs = 0;
+  for (const a of db) {
+    if (imgs >= MAX_IMG || imgFail || !CF_ACCOUNT_ID || !CF_API_TOKEN) break;
+    if (a.img) continue;
+    const img = await cover(a.id, a.scene || `A photorealistic news photograph illustrating: ${a.t}`, a.up ? "up" : "down");
+    imgs++;
+    if (img) { a.img = img; delete a.motif; }
+    await sleep(1000);
   }
   for (const old of db.slice(KEEP)) if (old.img) await unlink(`${OUT}/${old.img}`).catch(() => {});
   db = db.slice(0, KEEP);
