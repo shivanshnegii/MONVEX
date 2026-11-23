@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>try{var _t=localStorage.getItem("mvx-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=_t}catch(e){}</script>
 <title>MONVEX — Markets • Money • Momentum</title>
 <meta name="description" content="MONVEX is a financial news and market-information site: delayed market data and AI-assisted summaries of stories from named publishers, always linked to the source.">
 <meta property="og:title" content="MONVEX — Markets • Money • Momentum"><meta property="og:description" content="Financial news with clear sources, delayed market data and honest AI labelling."><meta property="og:type" content="website">
@@ -31,10 +32,10 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 #intro.go #chartfx{opacity:1;transition:opacity .6s ease .2s}
 #chartfx .ln{fill:none;stroke:url(#cg);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
 #chartfx .gl{stroke-width:12;opacity:.35;filter:blur(10px)}
-#chartfx .ar{fill:url(#ca);opacity:0}
+#chartfx .ar{fill:url(#ca);clip-path:inset(0 100% 0 0)}
 #chartfx .dt{fill:#fff;stroke:#14386e;stroke-width:3;opacity:0}
 #intro.go #chartfx .ln{animation:draw 1.9s cubic-bezier(.65,0,.35,1) .1s forwards}
-#intro.go #chartfx .ar{animation:fillIn 1.3s ease .7s forwards}
+#intro.go #chartfx .ar{animation:clipIn 1.9s cubic-bezier(.65,0,.35,1) .1s forwards}
 #intro.go #chartfx .dt{animation:fillIn .5s ease 1.7s forwards}
 .ic{text-align:center;position:relative}
 .halo{position:absolute;left:50%;top:50%;width:560px;max-width:90vw;height:260px;transform:translate(-50%,-60%);background:radial-gradient(closest-side,#14386e55,#b98a3e44 60%,transparent);opacity:0;animation:fade 2.4s .3s forwards,pulse 5s 2.7s ease-in-out infinite;filter:blur(8px)}
@@ -42,7 +43,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .logo span{display:inline-block;opacity:0;transform:translateY(28px);filter:blur(6px);animation:letter 1.3s cubic-bezier(.16,1,.3,1) forwards}
 .logo span:nth-child(1){animation-delay:.2s}.logo span:nth-child(2){animation-delay:.32s}.logo span:nth-child(3){animation-delay:.44s}.logo span:nth-child(4){animation-delay:.56s}.logo span:nth-child(5){animation-delay:.68s}.logo span:nth-child(6){animation-delay:.8s;color:#b98a3e}
 .tag{margin-top:14px;font-size:clamp(10px,2.4vw,13px);letter-spacing:.42em;color:var(--mu);padding-left:.42em;opacity:0;animation:fade 1.4s 1.9s forwards;position:relative}
-@keyframes draw{to{stroke-dashoffset:0}}@keyframes fillIn{to{opacity:1}}@keyframes track{from{letter-spacing:.02em}to{letter-spacing:.14em}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}@keyframes chev{0%{opacity:0;transform:translateY(-4px) rotate(45deg)}50%{opacity:.9}100%{opacity:0;transform:translateY(4px) rotate(45deg)}}
+@keyframes draw{to{stroke-dashoffset:0}}@keyframes clipIn{to{clip-path:inset(0 0 0 0)}}@keyframes fillIn{to{opacity:1}}@keyframes track{from{letter-spacing:.02em}to{letter-spacing:.14em}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}@keyframes chev{0%{opacity:0;transform:translateY(-4px) rotate(45deg)}50%{opacity:.9}100%{opacity:0;transform:translateY(4px) rotate(45deg)}}
 @keyframes letter{to{opacity:1;transform:none;filter:none}}
 @keyframes fade{to{opacity:1}}
 @keyframes wheel{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(12px)}}
@@ -164,6 +165,52 @@ button:active{transform:scale(.97)}
 @keyframes rvIn{from{opacity:0;transform:translateY(18px)}}
 @media(max-width:560px){.feat .tx{padding:22px}.tk{padding:14px}.nc{padding:14px}.cats h2{font-size:22px}}
 .cats h2:after{content:"";display:block;width:34px;height:3px;border-radius:3px;background:#b98a3e;margin-top:8px}
+/* ---- usability + dark mode ---- */
+main.wrap{padding-top:28px;padding-bottom:72px}
+.meta{flex-wrap:wrap}.mt{color:var(--mu)}
+.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.nb{background:#b98a3e;color:#fff;font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:999px;text-transform:uppercase}
+.upd{font-size:12px;font-weight:500;letter-spacing:0;color:var(--mu);margin-left:12px;display:inline-flex;align-items:center;gap:6px;vertical-align:middle}.upd i{width:7px;height:7px;border-radius:50%;background:var(--up);animation:pulse 2.4s infinite}
+.lm{display:flex;justify-content:center;margin:26px 0 0}.lm .ib{height:44px;padding:0 22px}
+.art .lead{font-size:calc(19px*var(--fs,1));line-height:1.6;margin:6px 0 4px;letter-spacing:-.01em}
+.art p.b{font-size:calc(17px*var(--fs,1))}
+.acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0 10px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:11px 18px;border-radius:999px;background:var(--card);color:var(--tx);font-size:14px;font-weight:600;text-decoration:none;border:1px solid var(--line);box-shadow:0 1px 2px rgba(14,26,51,.08);transition:transform .2s,box-shadow .3s}.btn:hover{box-shadow:0 8px 22px -8px rgba(29,79,158,.45)}.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--em);color:#fff;border-color:transparent}
+.art a.btn{color:var(--tx)}.art a.btn.pri{color:#fff}
+.fs{margin-left:auto;display:flex;gap:6px}.fs .btn{padding:9px 13px}
+.ai-note{margin:8px 0 0}.rh{margin:34px 0 10px}
+.pn{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}.pn a{padding:16px;border-radius:18px;background:var(--card);color:var(--tx)!important;text-decoration:none;font-weight:600;line-height:1.35}.pn small{display:block;color:var(--mu);font-weight:500;margin-bottom:4px}
+.tip{position:absolute;top:8px;transform:translateX(-50%);background:var(--tx);color:var(--bg);font-size:12px;font-weight:600;padding:3px 8px;border-radius:6px;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap}
+#top{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom,0px));width:44px;height:44px;border-radius:50%;background:var(--em);color:#fff;border:0;font-size:18px;box-shadow:0 10px 26px -8px rgba(14,26,51,.45);opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:40}#top.show{opacity:1;pointer-events:auto;transform:none}
+#newbar{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:60;background:var(--em);color:#fff;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:600;box-shadow:0 12px 30px -8px rgba(14,26,51,.45)}
+#flash{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:70;background:var(--tx);color:var(--bg);border-radius:999px;padding:10px 18px;font-size:13px;font-weight:600}
+.skipl{position:absolute;left:-999px;top:8px}.skipl:focus{left:12px;z-index:200;background:#fff;color:#0e1a33;padding:8px 14px;border-radius:999px}
+@media(max-width:700px){.tick{display:flex;overflow-x:auto;scroll-snap-type:x proximity;gap:10px;margin:0 -16px;padding:4px 16px 14px;scrollbar-width:none}.tick::-webkit-scrollbar{display:none}.tick{scroll-padding:0 16px}.tk{flex:0 0 150px;scroll-snap-align:start}}
+@media(max-width:560px){main.wrap{padding-top:20px;padding-bottom:56px}.sr{flex:0 0 42px;width:42px;min-width:0;padding:0;justify-content:center;cursor:pointer}.sr input{width:0;opacity:0;padding:0}.sr:focus-within{position:absolute;left:12px;right:12px;top:9px;width:auto;height:42px;padding:0 16px;justify-content:flex-start;gap:8px;z-index:6;background:#fff;box-shadow:0 8px 30px rgba(14,26,51,.18)}.sr:focus-within input{width:100%;opacity:1}.fs{margin-left:0}.pn{grid-template-columns:1fr}.upd{display:block;margin:6px 0 0}.btn.pri{width:100%;justify-content:center}}
+html[data-theme=dark]{color-scheme:dark;--bg:#0a1020;--bg2:#0e1730;--card:#111b33;--line:#1f2c4a;--tx:#e9eef9;--mu:#93a0bd;--em:#2f5fb8;--em2:#8fb3ff;--up:#34d399;--dn:#f87171}
+html[data-theme=dark] body{background:radial-gradient(900px 500px at 75% -10%,#1d4f9e33,transparent),radial-gradient(700px 420px at 5% 0%,#b98a3e14,transparent),var(--bg)}
+html[data-theme=dark] header{background:rgba(10,16,32,.72);border-bottom-color:rgba(255,255,255,.06)}
+html[data-theme=dark] .glow{box-shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -12px rgba(0,0,0,.6)}
+html[data-theme=dark] .glow:hover,html[data-theme=dark] .glow:focus-within{border-color:#2d4a85;box-shadow:0 14px 40px -10px rgba(47,95,184,.4)}
+html[data-theme=dark] .chip,html[data-theme=dark] .ib,html[data-theme=dark] .btn{background:var(--card)}
+html[data-theme=dark] .btn.pri,html[data-theme=dark] .chip.on{background:var(--em);color:#fff}
+html[data-theme=dark] .sr,html[data-theme=dark] nav{background:#16213d}
+html[data-theme=dark] .sr:focus-within{background:#1b2848}
+html[data-theme=dark] nav button.on{background:#2a3b66;color:var(--tx)}
+html[data-theme=dark] .nc svg,html[data-theme=dark] .cv,html[data-theme=dark] .feat .ch,html[data-theme=dark] .mkc,html[data-theme=dark] .mks>div,html[data-theme=dark] .bx{background:#0c1426}
+html[data-theme=dark] .brief{background:linear-gradient(180deg,#14213f,#0e1730)}
+html[data-theme=dark] .ai,html[data-theme=dark] .cv .chg{background:rgba(10,16,32,.78)}
+html[data-theme=dark] #mk{background:rgba(5,9,20,.8)}
+html[data-theme=dark] .art ul,html[data-theme=dark] .art p.b,html[data-theme=dark] .bx li{color:#c5cee3}
+html[data-theme=dark] #intro{background:linear-gradient(180deg,#0a1020,#0e1a33 60%,#14284b)}
+html[data-theme=dark] .tg{background:#1d4f9e40}
+html[data-theme=dark] .sk{background:linear-gradient(90deg,var(--card),#1a2744,var(--card));background-size:200% 100%}
+html[data-theme=dark] .skipl:focus{background:#16213d;color:#fff}
+html[data-theme=dark] .mkp{background:var(--card)}
+html[data-theme=dark] .lab{background:transparent}
+.arow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--card);margin:8px 0;text-decoration:none;box-shadow:0 1px 2px rgba(14,26,51,.06);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s}.arow b{flex:1;font-weight:600;line-height:1.35}.arow small{color:var(--mu);white-space:nowrap}.arow:hover{transform:translateY(-2px);box-shadow:0 10px 24px -10px rgba(29,79,158,.35)}.art a.arow,.art a.arow b{color:var(--tx)}
+@media(max-width:560px){.arow{flex-wrap:wrap}.arow b{flex:1 1 100%;order:3}}
 [hidden]{display:none!important}
 .nc .more{margin-top:auto;padding-top:4px}
 .cv{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#ffffff;width:100%}.cv>img:first-child{width:100%;height:100%;object-fit:cover;display:block}.cv .lg{position:absolute;left:10px;bottom:10px;width:34px;height:34px;border-radius:8px;background:#fff;padding:4px;object-fit:contain}.art .ch .cv{height:100%;aspect-ratio:auto}.cv .chg{position:absolute;right:10px;top:10px;background:#ffffffcc;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600}.cv>svg{width:100%;height:100%;display:block}.nc .cv>svg{height:100%}
@@ -172,9 +219,10 @@ button:active{transform:scale(.97)}
 </style>
 </head>
 <body class="lock">
+<a class="skipl" href="#app" id="skipl">Skip to content</a>
 <div id="intro" role="dialog" aria-label="MONVEX introduction">
   
-  <svg id="chartfx" aria-hidden="true"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#14386e"/><stop offset="1" stop-color="#b98a3e"/></linearGradient><linearGradient id="ca" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14386e" stop-opacity=".28"/><stop offset="1" stop-color="#14386e" stop-opacity="0"/></linearGradient></defs><path class="ar"/><path class="ln gl" pathLength="1"/><path class="ln" pathLength="1"/><circle class="dt" r="6"/></svg>
+  <svg id="chartfx" aria-hidden="true"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#14386e"/><stop offset="1" stop-color="#b98a3e"/></linearGradient><linearGradient id="ca" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14386e" stop-opacity=".28"/><stop offset="1" stop-color="#14386e" stop-opacity="0"/></linearGradient><linearGradient id="mg" x1="0" y1="0" x2="1" y2="0"><stop offset=".7" stop-color="#fff"/><stop offset=".98" stop-color="#000"/></linearGradient><mask id="mm" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><rect width="100%" height="100%" fill="url(#mg)"/></mask></defs><path class="ar" mask="url(#mm)"/><path class="ln gl" pathLength="1"/><path class="ln" pathLength="1"/><circle class="dt" r="6"/></svg>
   <div class="ic"><div class="halo"></div>
     <div class="logo" aria-label="MONVEX"><span>M</span><span>O</span><span>N</span><span>V</span><span>E</span><span>X</span></div>
     <div class="tag">MARKETS • MONEY • MOMENTUM</div></div>
@@ -186,14 +234,15 @@ button:active{transform:scale(.97)}
     <nav id="nav"></nav>
     <div class="sp"></div>
     <label class="sr glow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5b6784" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" placeholder="Search news…" aria-label="Search news"></label>
-    <button class="ib glow wl" id="wlb">★ <span>Watchlist</span> <b id="wc">0</b></button>
+    <button class="ib glow" id="thm" aria-label="Switch light or dark theme">☾</button><button class="ib glow wl" id="wlb">★ <span>Saved</span> <b id="wc">0</b></button>
     <button class="ib glow burger" id="bg" aria-label="Menu">☰</button>
   </div>
 </header>
 
-<main class="wrap" id="app"></main>
-<footer><div class="wrap"><div class="fl"><a href="#page-about">About</a><a href="#page-editorial">Editorial policy</a><a href="#page-privacy">Privacy</a><a href="#page-disclaimer">Disclaimer</a><a href="#page-contact">Contact</a></div><p>MONVEX is a news and market-information site. It is not a broker, does not offer trading or investment advice, and prices and AI-written summaries may be delayed or contain errors.</p><p>© 2026 MONVEX</p></div></footer>
-<aside id="drawer" aria-label="Watchlist"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Watchlist</h3><button class="ib glow" id="wx">Close</button></div><div id="wlist"></div></aside>
+<main class="wrap" id="app" tabindex="-1"></main>
+<footer><div class="wrap"><div class="fl"><a href="#page-archive">Archive</a><a href="#page-about">About</a><a href="#page-editorial">Editorial policy</a><a href="#page-privacy">Privacy</a><a href="#page-disclaimer">Disclaimer</a><a href="#page-contact">Contact</a></div><p>MONVEX is a news and market-information site. It is not a broker, does not offer trading or investment advice, and prices and AI-written summaries may be delayed or contain errors.</p><p>© 2026 MONVEX</p></div></footer>
+<button id="top" aria-label="Back to top">↑</button><button id="newbar" hidden>↑ New stories — tap to refresh</button><div id="flash" hidden></div>
+<aside id="drawer" aria-label="Watchlist"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Watchlist &amp; saved</h3><button class="ib glow" id="wx">Close</button></div><div id="wlist"></div></aside>
 
 <script>
 const $=s=>document.querySelector(s);
@@ -224,8 +273,8 @@ function candle(seed,up){const r=rnd(seed),n=34,W=340,H=200;let v=100,o=[];for(l
 let cat="All",qs="",wl=[];try{wl=JSON.parse(localStorage.getItem("mvx-wl")||"[]")}catch(e){}
 const save=()=>{try{localStorage.setItem("mvx-wl",JSON.stringify(wl))}catch(e){}};
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-function card(n){return `<article class="nc glow" tabindex="0" data-id="${n.id}">${vis(n)}<div class="meta"><span class="tg">${n.cat}</span>${tm(n)}</div><h4>${esc(n.t)}</h4><p class="sm">${esc(n.s)}</p><span class="more">Read more →</span></article>`}
-const NEWS_URL="news.json",BF_ID="";let MKUP="";
+function card(n){const nw=n.published&&Date.now()-new Date(n.published)<108e5;return `<article class="nc glow" tabindex="0" data-id="${n.id}">${vis(n)}<div class="meta"><span class="tg">${n.cat}</span>${nw?'<span class="nb">New</span>':""}<span class="mt">${n.source?esc(n.source.name)+" · ":""}${tm(n)}</span></div><h4>${esc(n.t)}</h4><p class="sm clamp">${esc(n.s)}</p><span class="more">Read more →</span></article>`}
+const NEWS_URL="news.json",BF_ID="";let MKUP="";let shown=9,saved=[],fs=1;try{saved=JSON.parse(localStorage.getItem("mvx-saved")||"[]");fs=+localStorage.getItem("mvx-fs")||1}catch(_){}document.documentElement.style.setProperty("--fs",fs);
 const SITE={owner:"",email:"",domain:""}; // fill in: owner name/brand, contact email
 const CF_TOKEN=""; // paste your Cloudflare Web Analytics token here to count visitors
 if(CF_TOKEN&&!/claude\.ai|claudeusercontent/.test(location.hostname)){const z=document.createElement("script");z.defer=true;z.src="https://static.cloudflareinsights.com/beacon.min.js";z.setAttribute("data-cf-beacon",JSON.stringify({token:CF_TOKEN}));document.head.appendChild(z)}
@@ -243,41 +292,56 @@ about:["About MONVEX",()=>`<p class="b">MONVEX is an independent financial news 
 editorial:["Editorial policy",()=>`<h3>How stories are chosen</h3><p class="b">Stories are collected automatically from the public news feeds of ${FEEDS_TXT}. We show only a short summary and link to the publisher for the full article.</p><h3>How summaries are written</h3><p class="b">An AI model (Google Gemini) rewrites the headline and a short summary from the publisher’s own headline and description. It is told not to add or change facts, and automated checks reject summaries containing numbers that are not in the source. AI can still make mistakes, so please read the original story before relying on it.</p><h3>Images and logos</h3><p class="b">Cover images are AI-generated illustrations, not photographs of real events, and are marked “AI image”. Company logos, when shown, are loaded from Brandfetch only to identify a company named in the story. Logos are trademarks of their owners.</p><h3>Market data and the Market Brief</h3><p class="b">Prices and charts come from Yahoo Finance’s public chart data, which is unofficial and delayed. The Market Brief is generated automatically from that data and the latest headlines. It is not analysis or advice.</p><h3>Corrections</h3><p class="b">If you find an error, or you are a publisher who wants a story changed or removed, contact us through the Contact page and we will act promptly.</p>`],
 privacy:["Privacy policy",()=>`<h3>What we collect</h3><p class="b">MONVEX has no accounts, forms or comments, and we do not ask for personal information. Your watchlist is stored only in your own browser (local storage) and is never sent to us.</p><h3>Third-party services</h3><ul><li><b>Hosting:</b> this site is served by GitHub Pages, which may keep standard server logs such as IP addresses.</li><li><b>Google Fonts:</b> font files are loaded from Google, which can see your IP address and browser details.</li><li><b>Brandfetch:</b> when a story shows a company logo, your browser requests it from Brandfetch.</li></ul><h3>Cookies, analytics and ads</h3><p class="b">MONVEX itself does not set cookies and currently runs no advertising. ${CF_TOKEN?"We use Cloudflare Web Analytics to count visits. It is cookie-free and does not track you across sites or build personal profiles; it reports aggregated page views, countries and referrers. ":""}If this changes, we will update this policy and ask for consent where the law requires it.</p><h3>Children</h3><p class="b">MONVEX is not directed at children.</p><h3>Your requests</h3><p class="b">For questions or requests about your data, use the Contact page.</p>`],
 disclaimer:["Disclaimer",()=>`<p class="b"><b>Not investment advice.</b> Everything on MONVEX is general information. It is not financial, investment, legal or tax advice, and it is not an offer or recommendation to buy or sell any security, currency, commodity or crypto-asset.</p><p class="b"><b>Delayed and imperfect data.</b> Prices, charts and summaries may be delayed, incomplete or wrong. We give no warranty of accuracy, and you should check official sources before making any decision.</p><p class="b"><b>AI-written content.</b> Summaries and images are generated with AI and can contain mistakes. Always read the original source linked on each story.</p><p class="b"><b>Risk.</b> Trading and investing in shares, commodities and crypto-assets involves risk, including loss of capital.</p><p class="b"><b>Third parties.</b> Headlines and linked articles belong to their publishers. Company names and logos belong to their owners. MONVEX is not affiliated with them, nor with any trading or investment platform that uses a similar name.</p>`],
+archive:["Archive",()=>{const old=NEWS.filter(n=>!isFresh(n)).sort((a,b)=>new Date(b.published||0)-new Date(a.published||0));if(!old.length)return `<p class="b">No older stories yet.</p>`;
+ let day="",h=`<p class="sm">Stories older than ${ARCH_H/24} days. Nothing is deleted; older stories are just kept out of the main feed.</p>`;
+ old.forEach(n=>{const d=n.published?new Date(n.published).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"}):"Earlier";if(d!=day){day=d;h+=`<h3>${d}</h3>`}h+=`<a class="arow" href="#${n.id}"><span class="tg">${n.cat}</span><b>${esc(n.t)}</b><small>${n.source?esc(n.source.name):""}</small></a>`});return h}],
 contact:["Contact",()=>`<p class="b">For corrections, feedback, privacy requests or takedown requests, get in touch:</p><ul>${SITE.email?`<li>Email: <a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a></li>`:""}<li>Report an issue: <a href="https://github.com/shivanshnegii/MONVEX/issues" target="_blank" rel="noopener">GitHub Issues</a></li></ul><p class="b">We aim to respond within a few days.</p>`]};
-function infoPage(h){const p=PG[h.slice(5)];if(!p)return home(false);document.title=p[0]+" — MONVEX";$("#app").innerHTML=`<div class="art"><a class="back glow" href="#">← Back to news</a><h1>${p[0]}</h1><p class="sm">Last updated 22 Nov 2026</p>${p[1]()}</div>`;scrollTo(0,0)}
+function infoPage(h){const p=PG[h.slice(5)];if(!p)return home(false);document.title=p[0]+" — MONVEX";$("#app").innerHTML=`<div class="art"><a class="back glow" href="#">← Back to news</a><h1>${p[0]}</h1>${h=="page-archive"?"":`<p class="sm">Last updated 22 Nov 2026</p>`}${p[1]()}</div>`;scrollTo(0,0)}
 function realLine(a,up,w=100,h=40){if(!a||a.length<2)return"";const mn=Math.min(...a),mx=Math.max(...a),n=a.length,y=p=>h-3-(p-mn)/(mx-mn||1)*(h-6),d=a.map((p,i)=>(i?"L":"M")+(i/(n-1)*w).toFixed(1)+" "+y(p).toFixed(1)).join(" "),c=up?"#22c55e":"#ef4444",g="r"+Math.abs(Math.round(a[0]*7+n))+w+h;return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c}" stop-opacity=".3"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></linearGradient></defs><path d="${d} L${w} ${h} L0 ${h}Z" fill="url(#${g})"/><path d="${d}" fill="none" stroke="${c}" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>`}
-const tm=n=>n.published?new Date(n.published).toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):n.d;
+const ago=t=>{const x=(Date.now()-new Date(t))/1000;if(!(x>=0))return null;if(x<90)return"just now";if(x<3600)return Math.round(x/60)+" min ago";if(x<86400)return Math.round(x/3600)+" h ago";if(x<172800)return"Yesterday";return null};
+const tm=n=>{if(!n.published)return n.d;const full=new Date(n.published).toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});return `<time datetime="${n.published}" title="${full}">${ago(n.published)||full}</time>`};
 const vis=n=>n.motif?`<div class="cv">${cov(n)}${n.change?`<span class="chg ${n.change[0]=="-"?"dn":"up"}">${esc(n.change)}</span>`:""}</div>`:n.img?`<div class="cv"><img src="${esc(n.img)}" alt="" loading="lazy"><span class="ai">AI image</span>${n.logo&&BF_ID?`<img class="lg" src="https://cdn.brandfetch.io/domain/${encodeURIComponent(n.logo)}?c=${BF_ID}" alt="" loading="lazy" onerror="this.remove()">`:""}${n.change?`<span class="chg ${n.change[0]=="-"?"dn":"up"}">${esc(n.change)}</span>`:""}</div>`:line(n.seed,n.up,100,40);
-function filtered(){const k=qs.toLowerCase();return NEWS.filter(n=>(cat=="All"||n.cat==cat)&&(!k||(n.t+n.s+n.cat).toLowerCase().includes(k))).sort((a,b)=>new Date(b.published||0)-new Date(a.published||0))}
+const ARCH_H=72,isFresh=n=>!n.published||Date.now()-new Date(n.published)<ARCH_H*36e5;
+function filtered(){const k=qs.toLowerCase(),all=NEWS.filter(n=>(cat=="All"||n.cat==cat)&&(!k||(n.t+n.s+n.cat).toLowerCase().includes(k))).sort((a,b)=>new Date(b.published||0)-new Date(a.published||0));
+ if(k)return all;const fr=all.filter(isFresh),min=cat=="All"?6:3;return fr.length>=min?fr:all.slice(0,Math.max(min,fr.length))}
 function home(loading){document.title="MONVEX — Markets • Money • Momentum";
  const tk=MK.map(m=>{const u=m[2]>=0;return `<div class="tk glow" tabindex="0" data-m="${m[0]}" title="Open ${m[0]} chart"><button class="star ${wl.includes(m[0])?"on":""}" data-w="${m[0]}" aria-label="Toggle watchlist ${m[0]}">${wl.includes(m[0])?"★":"☆"}</button><small>${m[0]}</small><div class="p">${m[1]}</div><div class="c ${u?"up":"dn"}">${u?"▲":"▼"} ${Math.abs(m[2]).toFixed(2)}%</div>${m[4]?realLine(m[4]["1M"],u,100,30):line(m[3]*7,u,100,30,20)}</div>`}).join("");
  const list=filtered(),f=list[0],rest=list.slice(1);
  let body;
  if(loading)body=`<div class="grid"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>`;
  else if(!list.length)body=`<div class="grid"><div class="empty">No stories match your search.</div></div>`;
- else body=`<section class="feat glow" data-id="${f.id}" tabindex="0"><div class="tx"><div class="meta"><span class="tg">${f.cat}</span>${tm(f)} · Featured${f.source?" · AI summary":" · Sample"}</div><h3>${esc(f.t)}</h3><p class="sm">${esc(f.s)}</p><span class="more">Read full story →</span></div><div class="ch">${(f.img||f.motif)?vis(f):candle(f.seed,f.up)}</div></section><div class="grid">${rest.map(card).join("")}</div>`;
+ else body=`<section class="feat glow" data-id="${f.id}" tabindex="0"><div class="tx"><div class="meta"><span class="tg">${f.cat}</span><span class="mt">${f.source?esc(f.source.name)+" · ":""}${tm(f)}</span><span class="mt">Featured${f.source?" · AI summary":" · Sample"}</span></div><h3>${esc(f.t)}</h3><p class="sm">${esc(f.s)}</p><span class="more">Read full story →</span></div><div class="ch">${(f.img||f.motif)?vis(f):candle(f.seed,f.up)}</div></section><div class="grid">${rest.slice(0,shown).map(card).join("")}</div>${rest.length>shown?`<div class="lm"><button class="ib glow" id="more">Show more stories · ${rest.length-shown} left</button></div>`:""}${!qs&&NEWS.some(n=>!isFresh(n))?`<div class="lm"><a class="ib glow" href="#page-archive" style="text-decoration:none">Older stories · Archive (${NEWS.filter(n=>!isFresh(n)).length}) →</a></div>`:""}`;
  $("#app").innerHTML=`<div class="tick">${tk}</div><p class="note">${MKUP?"Delayed data from Yahoo Finance · updated "+new Date(MKUP).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Sample data for demonstration only — not live prices."}</p>
- <div class="mh">${mstat().map(([n,o])=>`<span class="mhp"><i class="${o?"on":""}"></i>${n} ${o?"Open":"Closed"}</span>`).join("")}<span>Regular hours only; holidays not included.</span></div><div class="cats" id="news"><h2>Latest news</h2>${CATS.map(c=>`<button class="chip ${c==cat?"on":""}" data-c="${c}">${c}</button>`).join("")}</div>${body}
+ <div class="mh">${mstat().map(([n,o])=>`<span class="mhp"><i class="${o?"on":""}"></i>${n} ${o?"Open":"Closed"}</span>`).join("")}<span>Regular hours only; holidays not included.</span></div><div class="cats" id="news"><h2>Latest news${MKUP?`<small class="upd"><i></i>Updated ${ago(MKUP)||"today"}</small>`:""}</h2>${CATS.map(c=>`<button class="chip ${c==cat?"on":""}" data-c="${c}">${c}</button>`).join("")}</div>${qs?`<p class="note" style="margin:0 0 14px">${list.length} ${list.length==1?"story":"stories"} for “${esc(qs)}”</p>`:""}${body}
  ${brief()}`;
  wc()}
+function readMin(n){return Math.max(1,Math.round(((n.s||"")+" "+(n.b||[]).join(" ")).split(/\s+/).length/200))}
 function article(id){const n=NEWS.find(x=>x.id==id);if(!n)return home();
- const rel=NEWS.filter(x=>x.id!=id).sort((a,b)=>(b.cat==n.cat)-(a.cat==n.cat)).slice(0,2);
- $("#app").innerHTML=`<div class="art"><button class="back glow" id="bk">← Back to news</button><div class="meta"><span class="tg">${n.cat}</span>${tm(n)}${n.source?" · AI-generated summary":" · Sample article"}</div><h1>${esc(n.t)}</h1><p class="sm">${esc(n.s)}</p><div class="ch glow">${(n.img||n.motif)?vis(n):candle(n.seed+3,n.up)}</div>${P(n.b).join("")}${n.source?`<p class="sm">Source: <a href="${esc(n.source.url)}" target="_blank" rel="noopener" style="color:var(--em2)">${esc(n.source.name)}</a> · Summary and cover image are AI-generated.</p>`:""}<h3 style="margin:28px 0 4px">Related news</h3><div class="rel">${rel.map(card).join("")}</div></div>`;scrollTo(0,0)}
-function wc(){$("#wc").textContent=wl.length;$("#wlist").innerHTML=wl.length?wl.map(w=>{const m=MK.find(x=>x[0]==w);return `<div class="wi"><div><b>${w}</b><div class="sm">${m[1]}</div></div><span class="${m[2]>=0?"up":"dn"}">${m[2]>=0?"+":""}${m[2].toFixed(2)}%</span><button data-w="${w}" class="chip">Remove</button></div>`}).join(""):`<p class="sm" style="margin-top:14px">Star a market card to add it here.</p>`}
+ const all=NEWS.slice().sort((a,b)=>new Date(b.published||0)-new Date(a.published||0)),i=all.findIndex(x=>x.id==id),nx=all[i+1],pv=all[i-1],
+ rel=all.filter(x=>x.id!=id).sort((a,b)=>(b.cat==n.cat)-(a.cat==n.cat)).slice(0,2),sv=saved.includes(id),extra=(n.b||[]).filter(t=>t&&t!==n.s);
+ document.title=n.t+" — MONVEX";
+ $("#app").innerHTML=`<div class="art"><a class="back glow" href="#">← Back to news</a><div class="meta"><span class="tg">${n.cat}</span><span class="mt">${n.source?esc(n.source.name)+" · ":""}${tm(n)} · ${readMin(n)} min read</span></div><h1>${esc(n.t)}</h1><p class="lead">${esc(n.s)}</p><div class="ch glow">${(n.img||n.motif)?vis(n):candle(n.seed+3,n.up)}</div>${P(extra).join("")}<div class="acts">${n.source?`<a class="btn pri" href="${esc(n.source.url)}" target="_blank" rel="noopener">Read the full story at ${esc(n.source.name)} ↗</a>`:""}<button class="btn" data-save="${n.id}">${sv?"★ Saved":"☆ Save"}</button><button class="btn" data-share="${n.id}">Share ↗</button><span class="fs"><button class="btn" data-fs="-1" aria-label="Smaller text">A−</button><button class="btn" data-fs="1" aria-label="Larger text">A+</button></span></div>${n.source?`<p class="note ai-note">This summary and cover image were generated by AI from the publisher’s headline and description and may contain mistakes. The original story is the authoritative version.</p>`:""}<h3 class="rh">Related news</h3><div class="rel">${rel.map(card).join("")}</div>${(pv||nx)?`<div class="pn">${pv?`<a class="glow" href="#${pv.id}"><small>← Newer</small>${esc(pv.t)}</a>`:"<span></span>"}${nx?`<a class="glow" href="#${nx.id}"><small>Older →</small>${esc(nx.t)}</a>`:"<span></span>"}</div>`:""}</div>`;scrollTo(0,0)}
+function wc(){$("#wc").textContent=wl.length+saved.length;const sv=saved.map(id=>NEWS.find(n=>n.id==id)).filter(Boolean);
+ $("#wlist").innerHTML=(wl.length?wl.map(w=>{const m=MK.find(x=>x[0]==w);return `<div class="wi"><div><b>${w}</b><div class="sm">${m[1]}</div></div><span class="${m[2]>=0?"up":"dn"}">${m[2]>=0?"+":""}${m[2].toFixed(2)}%</span><button data-w="${w}" class="chip">Remove</button></div>`}).join(""):`<p class="sm" style="margin-top:14px">Star a market card to add it here.</p>`)+`<h4 style="margin:24px 0 4px">Saved stories</h4>`+(sv.length?sv.map(n=>`<a class="wi" href="#${n.id}" style="text-decoration:none;color:inherit"><span>${esc(n.t)}</span></a>`).join(""):`<p class="sm">Tap “Save” on a story to keep it here.</p>`)}
 let booted=0;function route(){const h=location.hash.slice(1);if(h.startsWith("story-"))article(h);else if(h.startsWith("page-"))infoPage(h);else if(!booted){booted=1;home(false)}else{home(true);setTimeout(()=>home(false),350)}}
-function setCat(c){cat=c;home(true);setTimeout(()=>home(false),300);document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.c==c))}
+function setCat(c){cat=c;shown=9;home(true);setTimeout(()=>home(false),300);document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.c==c))}
 $("#nav").innerHTML=["Markets","News","India","Crypto","Commodities","Tech"].map(c=>`<button data-c="${c}">${c}</button>`).join("");
 document.addEventListener("click",e=>{
  const w=e.target.closest("[data-w]");if(w){const k=w.dataset.w;wl=wl.includes(k)?wl.filter(x=>x!=k):[...wl,k];save();if(!location.hash.startsWith("#story"))home(false);else wc();return}
  const mk=e.target.closest(".tk[data-m]");if(mk){openMk(mk.dataset.m);return}
  const nb=e.target.closest("#nav button");if(nb){$("#nav").classList.remove("open");const c=nb.dataset.c=="News"?"All":nb.dataset.c;if(location.hash){history.pushState(null,"",location.pathname+location.search)}setCat(c);setTimeout(()=>$("#news")&&$("#news").scrollIntoView(),50);return}
  const ch=e.target.closest(".chip[data-c]");if(ch){setCat(ch.dataset.c);return}
+ if(e.target.closest("#wlist a"))$("#drawer").classList.remove("open");
+ if(e.target.closest("#more")){shown+=9;home(false);return}
+ const sv=e.target.closest("[data-save]");if(sv){const k=sv.dataset.save;saved=saved.includes(k)?saved.filter(x=>x!=k):[...saved,k];try{localStorage.setItem("mvx-saved",JSON.stringify(saved))}catch(_){}sv.textContent=saved.includes(k)?"★ Saved":"☆ Save";wc();return}
+ const sh=e.target.closest("[data-share]");if(sh){const n=NEWS.find(x=>x.id==sh.dataset.share),u=location.href.split("#")[0]+"#"+n.id;if(navigator.share){navigator.share({title:n.t,url:u}).catch(()=>{})}else if(navigator.clipboard){navigator.clipboard.writeText(u).then(()=>flash("Link copied"),()=>prompt("Copy this link",u))}else prompt("Copy this link",u);return}
+ const fz=e.target.closest("[data-fs]");if(fz){fs=Math.min(1.4,Math.max(.9,+(fs+.1*(+fz.dataset.fs)).toFixed(2)));document.documentElement.style.setProperty("--fs",fs);try{localStorage.setItem("mvx-fs",fs)}catch(_){}return}
  const nc=e.target.closest("[data-id]");if(nc){location.hash=nc.dataset.id;return}
  if(e.target.closest("#bk")){history.back();if(!location.hash)route();return}
  if(e.target.closest("#home")){location.hash="";cat="All";qs="";$("#q").value="";route();scrollTo(0,0)}
 });
 document.addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.dataset&&e.target.dataset.id)location.hash=e.target.dataset.id;if(e.key=="Enter"&&e.target.dataset&&e.target.dataset.m)openMk(e.target.dataset.m)});
-$("#q").addEventListener("input",e=>{qs=e.target.value.trim();if(location.hash){history.replaceState(null,"",location.pathname+location.search)}home(false)});
+$("#q").addEventListener("input",e=>{qs=e.target.value.trim();shown=9;if(location.hash){history.replaceState(null,"",location.pathname+location.search)}home(false)});
 $("#bg").onclick=()=>$("#nav").classList.toggle("open");
 $("#wlb").onclick=()=>$("#drawer").classList.add("open");$("#wx").onclick=()=>$("#drawer").classList.remove("open");
 addEventListener("hashchange",route);
@@ -305,7 +369,8 @@ fetch("markets.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if
 fetch(NEWS_URL,{cache:"no-cache"}).then(r=>r.ok?r.json():[]).then(a=>{if(!Array.isArray(a)||!a.length)return;NEWS.splice(0,NEWS.length,...a);const h=location.hash;if(h.startsWith("#story-"))article(h.slice(1));else if(!h.startsWith("#page-"))home(false)}).catch(()=>{});
 function openMk(name){const m=MK.find(x=>x[0]==name);if(!m)return;let rg="1M",ty="line";const u=m[2]>=0,p=parseFloat(m[1].replace(/[^0-9.]/g,"")),pre=m[1].startsWith("$")?"$":"",pv=p/(1+m[2]/100),f=v=>pre+v.toLocaleString("en-US",{maximumFractionDigits:2}),N={"1D":48,"1W":40,"1M":30,"1Y":60};
 const el=document.createElement("div");el.id="mk";el.setAttribute("role","dialog");el.setAttribute("aria-label",name+" chart");
-const draw=()=>{const sd=m[3]*13+rg.charCodeAt(1)*7+rg.length;el.innerHTML=`<div class="mkp glow"><div class="mkh"><div><small>${name}</small><div class="mkpx">${m[1]} <span class="${u?"up":"dn"}">${u?"▲":"▼"} ${Math.abs(m[2]).toFixed(2)}%</span></div></div><button class="ib glow" id="mkx">Close ✕</button></div><div class="mkt">${["1D","1W","1M","1Y"].map(r=>`<button class="chip ${r==rg?"on":""}" data-r="${r}">${r}</button>`).join("")}<span style="flex:1"></span>${m[4]?"":["line","candles"].map(t=>`<button class="chip ${t==ty?"on":""}" data-t="${t}">${t[0].toUpperCase()+t.slice(1)}</button>`).join("")}</div><div class="mkc">${m[4]?realLine(m[4][rg],m[4][rg][m[4][rg].length-1]>=m[4][rg][0]):(ty=="line"?line(sd,u,100,40,N[rg]):candle(sd,u))}</div><div class="mks"><div><small>PREV CLOSE</small>${f(pv)}</div><div><small>DAY HIGH</small>${f(m[5]?m[5].high:Math.max(p,pv)*1.004)}</div><div><small>DAY LOW</small>${f(m[5]?m[5].low:Math.min(p,pv)*.996)}</div><div><small>CHANGE</small><span class="${u?"up":"dn"}">${f(p-pv)}</span></div></div><p class="note">${m[4]?"Delayed market data from Yahoo Finance (unofficial source). For information only, not trading advice.":"Sample data for demonstration only — not live prices. The chart shape is illustrative."}</p></div>`};
+const hov=()=>{if(!m[4])return;const c=el.querySelector(".mkc"),a=m[4][rg];if(!c||!a||a.length<2)return;c.style.position="relative";const t=document.createElement("div");t.className="tip";c.appendChild(t);const mv=e=>{const r=c.getBoundingClientRect(),x=Math.max(0,Math.min(1,(e.clientX-r.left-10)/(r.width-20))),i=Math.round(x*(a.length-1));t.style.left=(10+i/(a.length-1)*(r.width-20))+"px";t.textContent=f(a[i]);t.style.opacity=1};c.onpointermove=mv;c.onpointerdown=mv;c.onpointerleave=()=>{t.style.opacity=0}};
+const draw=()=>{const sd=m[3]*13+rg.charCodeAt(1)*7+rg.length;el.innerHTML=`<div class="mkp glow"><div class="mkh"><div><small>${name}</small><div class="mkpx">${m[1]} <span class="${u?"up":"dn"}">${u?"▲":"▼"} ${Math.abs(m[2]).toFixed(2)}%</span></div></div><button class="ib glow" id="mkx">Close ✕</button></div><div class="mkt">${["1D","1W","1M","1Y"].map(r=>`<button class="chip ${r==rg?"on":""}" data-r="${r}">${r}</button>`).join("")}<span style="flex:1"></span>${m[4]?"":["line","candles"].map(t=>`<button class="chip ${t==ty?"on":""}" data-t="${t}">${t[0].toUpperCase()+t.slice(1)}</button>`).join("")}</div><div class="mkc">${m[4]?realLine(m[4][rg],m[4][rg][m[4][rg].length-1]>=m[4][rg][0]):(ty=="line"?line(sd,u,100,40,N[rg]):candle(sd,u))}</div><div class="mks"><div><small>PREV CLOSE</small>${f(pv)}</div><div><small>DAY HIGH</small>${f(m[5]?m[5].high:Math.max(p,pv)*1.004)}</div><div><small>DAY LOW</small>${f(m[5]?m[5].low:Math.min(p,pv)*.996)}</div><div><small>CHANGE</small><span class="${u?"up":"dn"}">${f(p-pv)}</span></div></div><p class="note">${m[4]?"Delayed market data from Yahoo Finance (unofficial source). For information only, not trading advice.":"Sample data for demonstration only — not live prices. The chart shape is illustrative."}</p></div>`;hov()};
 const close=()=>{el.remove();document.removeEventListener("keydown",esc2)},esc2=e=>{if(e.key=="Escape")close()};
 el.addEventListener("click",e=>{const t=e.target;if(t===el||t.id=="mkx")return close();const r=t.closest("[data-r]");if(r){rg=r.dataset.r;draw();return}const c=t.closest("[data-t]");if(c){ty=c.dataset.t;draw()}});
 document.addEventListener("keydown",esc2);draw();document.body.appendChild(el);el.querySelector("#mkx").focus()}
@@ -321,6 +386,19 @@ function enter(fast){if(entered)return;entered=true;
 setTimeout(()=>enter(),3200); // logo plays first, then the candlesticks start by themselves
 if(matchMedia("(prefers-reduced-motion: reduce)").matches)enter(true);
 if(/^#(story|page)-/.test(location.hash))enter(true);
+function setTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem("mvx-theme",t)}catch(_){}$("#thm").textContent=t=="dark"?"☀":"☾"}
+setTheme(document.documentElement.dataset.theme||"light");$("#thm").onclick=()=>setTheme(document.documentElement.dataset.theme=="dark"?"light":"dark");
+function flash(m){const f=$("#flash");f.textContent=m;f.hidden=false;clearTimeout(f._t);f._t=setTimeout(()=>f.hidden=true,2200)}
+$("#skipl").onclick=e=>{e.preventDefault();$("#app").focus()};
+addEventListener("scroll",()=>$("#top").classList.toggle("show",scrollY>900),{passive:true});$("#top").onclick=()=>scrollTo({top:0,behavior:"smooth"});
+document.addEventListener("keydown",e=>{if(e.key=="/"&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$("#q").focus()}});
+function applyMk(j){j.items.forEach(it=>{const m=MK.find(x=>x[0]==it.name);if(!m||typeof it.price!="number"||!it.series)return;const pre=/GOLD|BITCOIN/.test(it.name)?"$":"";m[1]=pre+it.price.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});m[2]=it.chg;m[4]=it.series;m[5]=it});MKUP=j.updated||""}
+let pend=null;const top1=a=>a.slice().sort((x,y)=>new Date(y.published||0)-new Date(x.published||0))[0];
+async function poll(){if(document.hidden)return;try{const[n,m]=await Promise.all([fetch(NEWS_URL,{cache:"no-store"}).then(r=>r.ok?r.json():null),fetch("markets.json",{cache:"no-store"}).then(r=>r.ok?r.json():null)]);
+ if(m&&Array.isArray(m.items)&&m.updated&&m.updated!==MKUP){applyMk(m);if(!location.hash&&!$("#mk")&&scrollY<150)home(false)}
+ if(Array.isArray(n)&&n.length){const t=top1(n);if(t&&!NEWS.some(x=>x.id==t.id)){pend=n;$("#newbar").hidden=false}}}catch(_){}}
+setInterval(poll,18e4);document.addEventListener("visibilitychange",()=>{if(!document.hidden)poll()});
+$("#newbar").onclick=()=>{if(pend){pend.forEach(n=>n.b=n.b||[n.s]);NEWS.splice(0,NEWS.length,...pend);pend=null}$("#newbar").hidden=true;if(!/^#(story|page)-/.test(location.hash))home(false);scrollTo({top:0,behavior:"smooth"});wc()};
 route();
 </script>
 </body>
