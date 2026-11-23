@@ -10,7 +10,7 @@ import { createHash } from "node:crypto";
 
 const { GEMINI_API_KEY, CF_ACCOUNT_ID, CF_API_TOKEN } = process.env;
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
-const MAX_NEW = +(process.env.MAX_NEW || 3), KEEP = 60, OUT = "./docs", DB = OUT + "/news.json", COVERS = OUT + "/covers";
+const MAX_NEW = +(process.env.MAX_NEW || 3), KEEP = 200, OUT = "./docs", DB = OUT + "/news.json", COVERS = OUT + "/covers";
 const CATS = ["Markets", "India", "Crypto", "Commodities", "Tech"];
 const MAX_IMG = +(process.env.MAX_IMG || 4);
 let imgFail = false; // stop wasting time if the image service says no
@@ -77,7 +77,7 @@ async function rewrite(a) {
   for (let i = 0; i < 2; i++) {
     const out = await gemini(`You are a financial news editor. Using ONLY the source text below, return JSON:
 {"headline":"clear professional headline","summary":"${lo}-${hi} words","category":"${CATS.join("|")}","sentiment":"up|down","company":{"name":"","domain":""} or null,"scene":"a distinct, concrete real-world scene specific to THIS story, as a news photographer would shoot it (e.g. a container port for trade news, an oil refinery for crude, a data centre for AI chips, a bank building for rates); no charts, no screens, no text, no logos, no people","change":"the percent move exactly as written in the source, e.g. -2%, else empty string"}
-Never add, infer, or change any fact, number, name or date. Use "company" only if one company is clearly the subject and you are certain of its official website domain. ${note}
+Write the headline and summary in your own words: do not copy sentences or long phrases from the source. Never add, infer, or change any fact, number, name or date. Use "company" only if one company is clearly the subject and you are certain of its official website domain. ${note}
 SOURCE: ${src}`);
     try {
       const j = JSON.parse(out.replace(/```json|```/g, "").trim()), n = wc(j.summary);
@@ -179,12 +179,14 @@ async function run() {
   let imgs = 0;
   for (const a of db) {
     if (imgs >= MAX_IMG || imgFail || !CF_ACCOUNT_ID || !CF_API_TOKEN) break;
-    if (a.img) continue;
+    if (a.img || (a.published && Date.now() - Date.parse(a.published) > 3 * 864e5)) continue;
     const img = await cover(a.id, a.scene || `A photorealistic news photograph illustrating: ${a.t}`, a.up ? "up" : "down");
     imgs++;
     if (img) { a.img = img; delete a.motif; }
     await sleep(1000);
   }
+  // text is kept; cover files of stories older than 14 days are removed to save space
+  for (const a of db) if (a.img && a.published && Date.now() - Date.parse(a.published) > 14 * 864e5) { await unlink(`${OUT}/${a.img}`).catch(() => {}); delete a.img; a.motif = MOTIF[a.cat]; }
   for (const old of db.slice(KEEP)) if (old.img) await unlink(`${OUT}/${old.img}`).catch(() => {});
   db = db.slice(0, KEEP);
   await mkdir(OUT, { recursive: true });
