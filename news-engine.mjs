@@ -12,7 +12,7 @@ const { GEMINI_API_KEY, CF_ACCOUNT_ID, CF_API_TOKEN } = process.env;
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 const MAX_NEW = +(process.env.MAX_NEW || 3), KEEP = 200, OUT = "./docs", DB = OUT + "/news.json", COVERS = OUT + "/covers";
 const CATS = ["Markets", "India", "Crypto", "Commodities", "Tech"];
-const MAX_IMG = +(process.env.MAX_IMG || 4);
+const MAX_IMG = +(process.env.MAX_IMG || 4), MAX_ENR = +(process.env.MAX_ENR || 4);
 let imgFail = false; // stop wasting time if the image service says no
 const MOTIF = { Markets: "chart", India: "bank", Crypto: "coin", Commodities: "gold", Tech: "chip" };
 const FEEDS = [ // a dead feed is skipped, not fatal. Check URLs in a browser if one stops producing news.
@@ -43,7 +43,7 @@ async function readFeed([src, url]) {
     if (!r.ok) throw new Error(r.status);
     const xml = await r.text();
     return [...xml.matchAll(/<item[\s>][\s\S]*?<\/item>/gi)].slice(0, 10).map(m => ({
-      src, title: tag(m[0], "title"), link: tag(m[0], "link"), desc: tag(m[0], "description"), date: tag(m[0], "pubDate"),
+      src, title: tag(m[0], "title"), link: tag(m[0], "link"), desc: tag(m[0], "description"), full: tag(m[0], "content:encoded"), date: tag(m[0], "pubDate"),
     })).filter(a => /^https?:\/\/[^\s"<>]+$/.test(a.link) && a.title);
   } catch (e) { console.error("Feed failed:", src, e.message); return []; }
 }
@@ -71,18 +71,18 @@ async function gemini(prompt) {
 // RSS gives only a short snippet, so length adapts: 80-120 words only when the source has enough text.
 // A shorter validated summary is better than a padded one that invents facts.
 async function rewrite(a) {
-  const src = `${a.title}. ${a.desc}`, sw = wc(src);
+  const body = a.full && a.full.length > (a.desc || "").length ? a.full : a.desc, src = `${a.title}. ${(body || "").slice(0, 3500)}`, sw = wc(src);
   const [lo, hi] = sw >= 100 ? [80, 120] : [20, Math.max(45, Math.min(80, Math.round(sw * 2)))];
   let note = "";
   for (let i = 0; i < 2; i++) {
     const out = await gemini(`You are a financial news editor. Using ONLY the source text below, return JSON:
-{"headline":"clear professional headline","summary":"${lo}-${hi} words","category":"${CATS.join("|")}","sentiment":"up|down","company":{"name":"","domain":""} or null,"scene":"a distinct, concrete real-world scene specific to THIS story, as a news photographer would shoot it (e.g. a container port for trade news, an oil refinery for crude, a data centre for AI chips, a bank building for rates); no charts, no screens, no text, no logos, no people","change":"the percent move exactly as written in the source, e.g. -2%, else empty string"}
+{"headline":"clear professional headline","summary":"${lo}-${hi} words","category":"${CATS.join("|")}","sentiment":"up|down","company":{"name":"","domain":""} or null,"scene":"a distinct, concrete real-world scene specific to THIS story, as a news photographer would shoot it (e.g. a container port for trade news, an oil refinery for crude, a data centre for AI chips, a bank building for rates); no charts, no screens, no text, no logos, no people","change":"the percent move exactly as written in the source, e.g. -2%, else empty string","simple":"2-3 short sentences that explain what happened to a reader who is new to finance, in everyday words (explain any jargon); use only facts from the source","points":["2-4 short key facts from the source; keep every number exactly as written"],"why":"2-3 sentences of GENERAL background on why this type of news usually matters (how such events tend to affect markets, borrowers, savers or businesses); no numbers, no company-specific claims, no predictions, no advice; use hedged words such as usually or can"}
 Write the headline and summary in your own words: do not copy sentences or long phrases from the source. Never add, infer, or change any fact, number, name or date. Use "company" only if one company is clearly the subject and you are certain of its official website domain. ${note}
 SOURCE: ${src}`);
     try {
       const j = JSON.parse(out.replace(/```json|```/g, "").trim()), n = wc(j.summary);
       const bad = (`${j.headline} ${j.summary}`.match(/\d[\d,.]*\d|\d/g) || []).filter(x => !src.includes(x.replace(/[.,]$/, "")));
-      if (n >= lo && n <= hi && !bad.length && CATS.includes(j.category)) { j.change = /^[+-]?\d+(\.\d+)?%$/.test(j.change || "") && src.includes(j.change.replace(/^[+-]/, "")) ? j.change : ""; return j; }
+      if (n >= lo && n <= hi && !bad.length && CATS.includes(j.category)) { j.change = /^[+-]?\d+(\.\d+)?%$/.test(j.change || "") && src.includes(j.change.replace(/^[+-]/, "")) ? j.change : ""; j.x = okExtras(j, src); return j; }
       note = `Previous attempt failed (${n} words; numbers not in source: ${bad.join(",") || "none"}). Fix it.`;
     } catch { note = "Previous output was not valid JSON."; }
   }
@@ -115,6 +115,21 @@ async function cover(id, scene, dir) {
     await writeFile(f, Buffer.from(b64, "base64"));
     return rel;
   } catch (e) { console.error("Cover skipped:", e.message); imgFail = true; return null; } // article still publishes, site shows its chart
+}
+
+// ---- Plain-language explanation fields (all optional; dropped if they fail the checks) ----
+const nums = t => String(t).match(/\d[\d,.]*\d|\d/g) || [];
+function okExtras(j, src) {
+  const out = {}, w = t => wc(String(t)), bad = t => nums(t).filter(x => !src.includes(x.replace(/[.,]$/, "")));
+  if (typeof j.simple === "string" && w(j.simple) >= 12 && w(j.simple) <= 80 && !bad(j.simple).length) out.simple = j.simple.trim();
+  if (Array.isArray(j.points)) { const pts = j.points.map(String).map(p => p.trim()).filter(p => p && w(p) <= 30 && !bad(p).length).slice(0, 4); if (pts.length >= 2) out.points = pts; }
+  if (typeof j.why === "string" && w(j.why) >= 12 && w(j.why) <= 90 && !/\d/.test(j.why)) out.why = j.why.trim(); // general background: no numbers allowed
+  return out;
+}
+async function enrich(a) { // add the explanation to a story that was published without it
+  const src = `${a.sourceTitle || a.t}. ${a.s}`;
+  const out = await gemini(`You help beginners understand financial news. Using ONLY the source text below, return JSON: {"simple":"2-3 short sentences explaining what happened in everyday words (explain any jargon); use only facts from the source","points":["2-4 short key facts from the source; keep every number exactly as written"],"why":"2-3 sentences of GENERAL background on why this type of news usually matters; no numbers, no company-specific claims, no predictions, no advice; use hedged words such as usually or can"}\nSOURCE: ${src}`);
+  try { return okExtras(JSON.parse(out.replace(/```json|```/g, "").trim()), src); } catch { return {}; }
 }
 
 // ---- Market prices + charts (Yahoo Finance chart endpoint: free, no key, unofficial -> may change) ----
@@ -169,7 +184,7 @@ async function run() {
       db.unshift({
         id, cat: j.category, t: j.headline, s: j.summary, b: [j.summary],
         d: new Date(t || Date.now()).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
-        up: j.sentiment === "up" ? 1 : 0, change: j.change || "", scene: j.scene, motif: img ? undefined : MOTIF[j.category], seed: parseInt(id.slice(6, 10), 16), img,
+        up: j.sentiment === "up" ? 1 : 0, change: j.change || "", scene: j.scene, ...(j.x || {}), motif: img ? undefined : MOTIF[j.category], seed: parseInt(id.slice(6, 10), 16), img,
         logo: logoDomain(j.company, `${a.title}. ${a.desc}`), source: { name: a.src, url: a.link }, sourceTitle: a.title, published: new Date(t || Date.now()).toISOString(),
       });
       added++;
@@ -184,6 +199,13 @@ async function run() {
     imgs++;
     if (img) { a.img = img; delete a.motif; }
     await sleep(1000);
+  }
+  // Add the plain-language explanation to recent stories that do not have it yet (a few per run)
+  let enr = 0;
+  for (const a of db) {
+    if (enr >= MAX_ENR) break;
+    if (a.simple || a.enr || (a.published && Date.now() - Date.parse(a.published) > 3 * 864e5)) continue;
+    try { Object.assign(a, await enrich(a)); a.enr = 1; enr++; await sleep(4000); } catch (err) { if (err.quota || err.fatal) break; }
   }
   // text is kept; cover files of stories older than 14 days are removed to save space
   for (const a of db) if (a.img && a.published && Date.now() - Date.parse(a.published) > 14 * 864e5) { await unlink(`${OUT}/${a.img}`).catch(() => {}); delete a.img; a.motif = MOTIF[a.cat]; }
