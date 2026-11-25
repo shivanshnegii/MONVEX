@@ -211,6 +211,17 @@ html[data-theme=dark] .mkp{background:var(--card)}
 html[data-theme=dark] .lab{background:transparent}
 .arow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--card);margin:8px 0;text-decoration:none;box-shadow:0 1px 2px rgba(14,26,51,.06);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s}.arow b{flex:1;font-weight:600;line-height:1.35}.arow small{color:var(--mu);white-space:nowrap}.arow:hover{transform:translateY(-2px);box-shadow:0 10px 24px -10px rgba(29,79,158,.35)}.art a.arow,.art a.arow b{color:var(--tx)}
 @media(max-width:560px){.arow{flex-wrap:wrap}.arow b{flex:1 1 100%;order:3}}
+.gl{border-bottom:1.5px dotted var(--em2);cursor:help}.gl:hover,.gl:focus{background:rgba(29,79,158,.12);outline:none;border-radius:3px}
+#gtip{position:fixed;z-index:120;background:var(--tx);color:var(--bg);font-size:13px;font-weight:500;line-height:1.5;padding:10px 13px;border-radius:12px;box-shadow:0 14px 34px -10px rgba(14,26,51,.5);pointer-events:none}
+#player{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:65;display:flex;align-items:center;gap:10px;background:var(--tx);color:var(--bg);padding:7px 8px 7px 18px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:0 14px 34px -10px rgba(14,26,51,.5)}
+#player button{background:rgba(127,127,127,.28);color:inherit;border-radius:50%;width:32px;height:32px;font-size:13px}
+.mh2{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:12px 0 0}.mh2 #listen{margin-left:auto;height:38px;padding:0 16px;font-size:13px}
+.mood{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--mu);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:999px}.mood b{color:var(--tx);font-size:13px}.mood small{font-size:12px}
+.mbar{position:relative;width:110px;height:6px;border-radius:6px;background:linear-gradient(90deg,#dc2626,#b98a3e 50%,#16a34a)}.mbar i{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--tx);transform:translate(-50%,-50%);transition:left .8s cubic-bezier(.2,.8,.2,1)}
+.wb{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 16px;padding:12px 16px;border-radius:18px;background:var(--card);border:1px solid var(--line);font-size:14px}.wb .ib{height:34px;padding:0 14px;font-size:13px;margin-left:8px}
+.wbb{display:flex;gap:8px;align-items:center}.wb{margin-top:14px}.wb .ib{margin-left:0}.mood b,.mood span{white-space:nowrap}.rd{font-size:11px;color:var(--mu)}.nc.read h4{color:var(--mu)}.nc.read .cv{opacity:.75}
+@media(max-width:560px){.mh2{gap:10px}.mh2 #listen{margin-left:0;width:100%;justify-content:center}.mood{width:100%;flex-wrap:wrap;border-radius:18px;row-gap:4px}.mbar{flex:1;min-width:70px}.mood small{flex-basis:100%}.wb{align-items:flex-start}}
+html[data-theme=dark] .mbar i{background:#0a1020}html[data-theme=dark] .gl:hover,html[data-theme=dark] .gl:focus{background:rgba(143,179,255,.16)}
 [hidden]{display:none!important}
 .nc .more{margin-top:auto;padding-top:4px}
 .cv{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#ffffff;width:100%}.cv>img:first-child{width:100%;height:100%;object-fit:cover;display:block}.cv .lg{position:absolute;left:10px;bottom:10px;width:34px;height:34px;border-radius:8px;background:#fff;padding:4px;object-fit:contain}.art .ch .cv{height:100%;aspect-ratio:auto}.cv .chg{position:absolute;right:10px;top:10px;background:#ffffffcc;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600}.cv>svg{width:100%;height:100%;display:block}.nc .cv>svg{height:100%}
@@ -241,14 +252,14 @@ html[data-theme=dark] .lab{background:transparent}
 
 <main class="wrap" id="app" tabindex="-1"></main>
 <footer><div class="wrap"><div class="fl"><a href="#page-archive">Archive</a><a href="#page-about">About</a><a href="#page-editorial">Editorial policy</a><a href="#page-privacy">Privacy</a><a href="#page-disclaimer">Disclaimer</a><a href="#page-contact">Contact</a></div><p>MONVEX is a news and market-information site. It is not a broker, does not offer trading or investment advice, and prices and AI-written summaries may be delayed or contain errors.</p><p>© 2026 MONVEX</p></div></footer>
-<button id="top" aria-label="Back to top">↑</button><button id="newbar" hidden>↑ New stories — tap to refresh</button><div id="flash" hidden></div>
+<div id="gtip" role="tooltip" hidden></div><div id="player" hidden><span id="pl-t">Reading</span><button id="pl-pp" aria-label="Pause or resume">⏸</button><button id="pl-x" aria-label="Stop">✕</button></div><button id="top" aria-label="Back to top">↑</button><button id="newbar" hidden>↑ New stories — tap to refresh</button><div id="flash" hidden></div>
 <aside id="drawer" aria-label="Watchlist"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Watchlist &amp; saved</h3><button class="ib glow" id="wx">Close</button></div><div id="wlist"></div></aside>
 
 <script>
 const $=s=>document.querySelector(s);
 const CATS=["All","Markets","India","Crypto","Commodities","Tech"];
 const MK=[["SENSEX","74,892.40",0.62,1],["NIFTY 50","22,704.15",0.54,2],["S&P 500","5,318.20",-0.21,3],["NASDAQ","16,845.70",0.38,4],["GOLD","$2,364.10",-0.47,5],["BITCOIN","$68,210",1.84,6]];
-const P=(t)=>t.map(x=>"<p class='b'>"+esc(x)+"</p>");
+const P=(t)=>t.map(x=>"<p class='b'>"+gloss(esc(x))+"</p>");
 const NEWS=[
 {id:"story-1",cat:"Markets",t:"Global equities edge higher as investors weigh rate-cut timing",d:"19 Nov 2026",s:"Sample story: broad indices firm up while traders reassess the path of central bank policy and earnings momentum.",up:1,seed:11,b:["This is sample editorial content created for the MONVEX demo. Global equity benchmarks traded in a narrow, constructive range as participants balanced expectations on interest rates with a steady earnings backdrop.","Analysts in this fictional scenario note that breadth improved, with cyclical sectors outperforming defensives. Bond yields eased slightly, supporting valuations across growth names.","Looking ahead, the sample narrative highlights inflation prints and central bank commentary as the next catalysts. Nothing here is real market data or financial advice."]},
 {id:"story-2",cat:"India",t:"Sensex and Nifty extend gains led by banks and IT heavyweights",d:"19 Nov 2026",s:"Sample story: domestic benchmarks climb on steady institutional inflows and firm financials.",up:1,seed:22,b:["Sample content: Indian benchmarks advanced in a broad-based rally, with private banks and large IT names contributing most of the upside.","Mid-cap and small-cap indices also finished in the green, reflecting healthy risk appetite among domestic participants.","Market watchers in this illustrative piece suggest monitoring rupee movement and foreign flows in coming sessions."]},
@@ -273,7 +284,7 @@ function candle(seed,up){const r=rnd(seed),n=34,W=340,H=200;let v=100,o=[];for(l
 let cat="All",qs="",wl=[];try{wl=JSON.parse(localStorage.getItem("mvx-wl")||"[]")}catch(e){}
 const save=()=>{try{localStorage.setItem("mvx-wl",JSON.stringify(wl))}catch(e){}};
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-function card(n){const nw=n.published&&Date.now()-new Date(n.published)<108e5;return `<article class="nc glow" tabindex="0" data-id="${n.id}">${vis(n)}<div class="meta"><span class="tg">${n.cat}</span>${nw?'<span class="nb">New</span>':""}<span class="mt">${n.source?esc(n.source.name)+" · ":""}${tm(n)}</span></div><h4>${esc(n.t)}</h4><p class="sm clamp">${esc(n.s)}</p><span class="more">Read more →</span></article>`}
+function card(n){const nw=n.published&&Date.now()-new Date(n.published)<108e5;return `<article class="nc glow${readIds.has(n.id)?" read":""}" tabindex="0" data-id="${n.id}">${vis(n)}<div class="meta"><span class="tg">${n.cat}</span>${nw?'<span class="nb">New</span>':""}${readIds.has(n.id)?'<span class="rd">✓ Read</span>':""}<span class="mt">${n.source?esc(n.source.name)+" · ":""}${tm(n)}</span></div><h4>${esc(n.t)}</h4><p class="sm clamp">${esc(n.s)}</p><span class="more">Read more →</span></article>`}
 const NEWS_URL="news.json",BF_ID="";let MKUP="";let shown=9,saved=[],fs=1;try{saved=JSON.parse(localStorage.getItem("mvx-saved")||"[]");fs=+localStorage.getItem("mvx-fs")||1}catch(_){}document.documentElement.style.setProperty("--fs",fs);
 const SITE={owner:"",email:"",domain:""}; // fill in: owner name/brand, contact email
 const CF_TOKEN=""; // paste your Cloudflare Web Analytics token here to count visitors
@@ -286,6 +297,67 @@ function mstat(){const now=new Date(),chk=(tz,o,c)=>{const p=new Intl.DateTimeFo
 function brief(){const ms=MK.filter(m=>m[4]);if(!MKUP||!ms.length)return OLDBRIEF;
  const f=v=>(v>=0?"+":"−")+Math.abs(v).toFixed(2)+"%",s=ms.slice().sort((a,b)=>b[2]-a[2]),up=s.filter(m=>m[2]>=0),dn=s.filter(m=>m[2]<0).reverse(),mv=ms.slice().sort((a,b)=>Math.abs(b[2])-Math.abs(a[2])).slice(0,3),nw=NEWS.filter(n=>n.source).sort((a,b)=>new Date(b.published||0)-new Date(a.published||0)).slice(0,3),li=a=>a.length?"<ul>"+a.join("")+"</ul>":"<p class='sm'>None right now.</p>",row=m=>`<li>${esc(m[0])} ${esc(m[1])} (${f(m[2])})</li>`;
  return `<section class="brief glow" id="brief"><h2>Market Brief <span class="lab">GENERATED FROM LIVE DATA</span></h2><p class="sm" style="margin-top:10px">${up.length} of ${ms.length} tracked markets are higher in the latest delayed data. Strongest: ${esc(s[0][0])} (${f(s[0][2])}); weakest: ${esc(s[s.length-1][0])} (${f(s[s.length-1][2])}).</p><div class="bg"><div class="bx"><h5>KEY MOVEMENTS</h5>${li(mv.map(row))}</div><div class="bx"><h5>LATEST HEADLINES</h5>${li(nw.map(n=>`<li><a href="#${n.id}" style="color:var(--em2)">${esc(n.t)}</a></li>`))}</div><div class="bx bull"><h5>▲ HIGHER</h5>${li(up.map(row))}</div><div class="bx bear"><h5>▼ LOWER</h5>${li(dn.map(row))}</div></div></section>`}
+const GL_RAW=[
+[["correction"],"A fall of 10% or more from a recent peak. It is milder than a bear market (20% or more)."],
+[["bear market"],"A drop of 20% or more from a recent high, usually lasting for months."],
+[["bull market"],"A long rise of 20% or more from a recent low."],
+[["rate hike","rate hikes","rate rise","rate rises"],"When a central bank raises its main interest rate. Borrowing gets costlier, which tends to cool the economy and often weighs on share prices."],
+[["rate cut","rate cuts"],"A central bank lowering its main interest rate so that borrowing becomes cheaper."],
+[["Treasury yields","bond yields","yields","yield"],"The yearly return on a bond, shown as a percentage. When bond prices fall, yields rise."],
+[["Treasuries","Treasury"],"Bonds issued by the US government. Their yields are a benchmark for borrowing costs around the world."],
+[["inflation"],"How fast prices are rising. Central banks react to it by changing interest rates."],
+[["volatility","volatile"],"How sharply and how quickly prices swing up and down."],
+[["ETF","ETFs"],"Exchange-traded fund: a basket of assets such as shares, bonds or crypto that trades like a single stock."],
+[["futures"],"Contracts to buy or sell something at a fixed price on a future date. Traders use them to bet on, or protect against, price moves."],
+[["spot gold"],"The price for buying gold right now, rather than for delivery on a future date."],
+[["Brent"],"The global benchmark price for crude oil, based on oil from the North Sea."],
+[["West Texas Intermediate","WTI"],"The main US benchmark price for crude oil."],
+[["S&P 500"],"An index of 500 large US companies, often used as a gauge of the whole US stock market."],
+[["Nasdaq Composite","Nasdaq"],"A US stock exchange, and an index that leans heavily towards technology companies."],
+[["Dow Jones","the Dow","Dow"],"The Dow Jones Industrial Average: an index of 30 large US companies."],
+[["Sensex"],"The main index of the BSE in India, tracking 30 large companies."],
+[["Nifty 50","Nifty"],"The main index of the NSE in India, tracking 50 large companies."],
+[["semiconductor","semiconductors","chipmakers"],"Makers of the chips that power phones, computers and AI systems."],
+[["earnings"],"A company’s profit report, usually published every three months. Shares often move sharply afterwards."],
+[["IPO"],"Initial public offering: when a private company sells its shares to the public for the first time."],
+[["market cap"],"A company’s total value on the stock market: share price multiplied by the number of shares."],
+[["recession"],"A broad slowdown of the economy, often defined as two quarters in a row of shrinking output."],
+[["FIIs","FPIs","foreign institutional investors"],"Overseas funds that invest in a country’s markets. Their buying or selling can move Indian shares."],
+[["Federal Reserve","the Fed"],"The US central bank. It sets US interest rates."],
+[["RBI"],"The Reserve Bank of India, India’s central bank."],
+[["basis points","basis point"],"One hundredth of a percentage point (0.01%). Used when talking about small rate changes."],
+[["sell-off","selloff"],"A sharp, broad drop in prices as many investors sell at the same time."],
+[["rally"],"A sustained rise in prices."],
+[["dollar index"],"A measure of the US dollar against a basket of major currencies."],
+[["hawkish"],"Favouring higher interest rates to fight inflation."],
+[["dovish"],"Favouring lower interest rates to support growth."]];
+let GL_RE=null,GL_MAP=null;
+function glInit(){GL_MAP={};const keys=[];GL_RAW.forEach(([ks,d],i)=>ks.forEach(k=>{GL_MAP[esc(k).toLowerCase()]=[i,d];keys.push(esc(k))}));keys.sort((a,b)=>b.length-a.length);GL_RE=new RegExp("\\b("+keys.map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("|")+")\\b","gi")}
+function gloss(h){if(!GL_RE)glInit();const seen=new Set();return h.replace(GL_RE,m=>{const e=GL_MAP[m.toLowerCase()];if(!e||seen.has(e[0]))return m;seen.add(e[0]);return `<span class="gl" tabindex="0" data-d="${esc(e[1]).replace(/"/g,"&quot;")}">${m}</span>`})}
+function gshow(el){const t=$("#gtip");t.textContent=el.dataset.d;t.hidden=false;const r=el.getBoundingClientRect(),w=Math.min(300,innerWidth-24);t.style.width=w+"px";t.style.left=Math.max(12,Math.min(innerWidth-w-12,r.left+r.width/2-w/2))+"px";const below=r.bottom+10;t.style.top=(below+t.offsetHeight>innerHeight?Math.max(8,r.top-t.offsetHeight-10):below)+"px"}
+document.addEventListener("mouseover",e=>{const g=e.target.closest&&e.target.closest(".gl");if(g)gshow(g)});
+document.addEventListener("mouseout",e=>{if(e.target.closest&&e.target.closest(".gl"))$("#gtip").hidden=true});
+document.addEventListener("focusin",e=>{const g=e.target.closest&&e.target.closest(".gl");if(g)gshow(g)});
+document.addEventListener("focusout",()=>{$("#gtip").hidden=true});
+addEventListener("scroll",()=>{$("#gtip").hidden=true},{passive:true});
+/* listen (browser text-to-speech) */
+const TTS={q:[],i:0,on:false};
+function speak(q){if(!("speechSynthesis" in window)){flash("This browser can’t read aloud");return}stopSpeak();TTS.q=q;TTS.i=0;TTS.on=true;$("#player").hidden=false;$("#pl-pp").textContent="⏸";nextSpeak()}
+function nextSpeak(){if(!TTS.on)return;if(TTS.i>=TTS.q.length)return stopSpeak();$("#pl-t").textContent=TTS.q.length>1?`Reading ${TTS.i+1} of ${TTS.q.length}`:"Reading story";const u=new SpeechSynthesisUtterance(TTS.q[TTS.i]);u.lang="en-IN";const vs=speechSynthesis.getVoices(),v=vs.find(v=>/en[-_]IN/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang));if(v)u.voice=v;u.onend=()=>{TTS.i++;nextSpeak()};u.onerror=e=>{if(e.error!=="canceled"&&e.error!=="interrupted"){flash("Audio isn’t available on this device");stopSpeak()}};speechSynthesis.speak(u)}
+function stopSpeak(){TTS.on=false;try{speechSynthesis.cancel()}catch(_){}const p=$("#player");if(p)p.hidden=true}
+function briefLines(){const t=NEWS.filter(isFresh).sort((a,b)=>new Date(b.published||0)-new Date(a.published||0)).slice(0,5);return ["MONVEX brief. Here are the top stories right now."].concat(t.map((n,i)=>`Story ${i+1}. ${n.t}. ${n.s}`))}
+/* equity mood */
+function mood(){const eq=["SENSEX","NIFTY 50","S&P 500","NASDAQ"].map(n=>MK.find(m=>m[0]==n)).filter(m=>m&&m[4]);if(eq.length<3||!MKUP)return"";const a=eq.reduce((x,m)=>x+m[2],0)/eq.length,up=eq.filter(m=>m[2]>=0).length,pct=(Math.max(-3,Math.min(3,a))+3)/6*100,lab=a>=1?"Upbeat":a>=.3?"Positive":a>-.3?"Calm":a>-1?"Cautious":"Risk-off";
+ return `<div class="mood" title="Average move of Sensex, Nifty 50, S&amp;P 500 and Nasdaq. A simple summary of today’s data, not a forecast."><span>Equity mood</span><div class="mbar"><i style="left:${pct.toFixed(0)}%"></i></div><b>${lab}</b><small>${up} of ${eq.length} indices up</small></div>`}
+/* welcome back */
+let newOnly=false,wGone=false;const PREV=+(()=>{try{return localStorage.getItem("mvx-last")}catch(_){return 0}})()||0;
+function welcome(){if(!PREV||wGone||Date.now()-PREV<18e5)return"";const c=NEWS.filter(n=>n.published&&new Date(n.published)>PREV).length;
+ if(newOnly)return `<div class="wb"><span>Showing only stories since your last visit.</span><button class="ib glow" id="w-all">Show all</button></div>`;
+ if(!c)return"";const w=ago(PREV)||new Date(PREV).toLocaleDateString("en-GB",{day:"numeric",month:"short"});return `<div class="wb"><span>👋 Welcome back — <b>${c} new ${c==1?"story":"stories"}</b> since your last visit (${w}).</span><span class="wbb"><button class="ib glow" id="w-new">Show new</button><button class="ib glow" id="w-x" aria-label="Dismiss">✕</button></span></div>`}
+const saveLast=()=>{try{localStorage.setItem("mvx-last",Date.now())}catch(_){}};addEventListener("pagehide",saveLast);document.addEventListener("visibilitychange",()=>{if(document.hidden)saveLast()});
+/* read state */
+let readIds=new Set();try{readIds=new Set(JSON.parse(localStorage.getItem("mvx-read")||"[]"))}catch(_){}
+function markRead(id){if(readIds.has(id))return;readIds.add(id);try{localStorage.setItem("mvx-read",JSON.stringify([...readIds].slice(-300)))}catch(_){}}
 const FEEDS_TXT="CNBC, MarketWatch, Yahoo Finance, Bloomberg Markets, CoinDesk, Cointelegraph and The Economic Times";
 const PG={
 about:["About MONVEX",()=>`<p class="b">MONVEX is an independent financial news and market-information website covering global markets, India, crypto, commodities and technology. We collect headlines from established publishers, use AI to write short summaries, and link every story back to its original source.</p><h3>What MONVEX is not</h3><p class="b">MONVEX is not a broker, does not hold anyone’s money, does not offer trading, and does not give personalised investment advice. Nothing here is a recommendation to buy or sell anything.</p><h3>Who runs it</h3><p class="b">${SITE.owner?esc(SITE.owner)+" runs MONVEX as an independent publisher.":"MONVEX is run by an independent publisher."} See the Contact page to reach us.</p><h3>Our approach</h3><ul><li>Every story names and links its source.</li><li>AI-written summaries and AI-generated images are labelled as such.</li><li>Market data is delayed and shown with its source and update time.</li><li>Errors are corrected or removed when reported.</li></ul>`],
@@ -302,8 +374,8 @@ const ago=t=>{const x=(Date.now()-new Date(t))/1000;if(!(x>=0))return null;if(x<
 const tm=n=>{if(!n.published)return n.d;const full=new Date(n.published).toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});return `<time datetime="${n.published}" title="${full}">${ago(n.published)||full}</time>`};
 const vis=n=>n.motif?`<div class="cv">${cov(n)}${n.change?`<span class="chg ${n.change[0]=="-"?"dn":"up"}">${esc(n.change)}</span>`:""}</div>`:n.img?`<div class="cv"><img src="${esc(n.img)}" alt="" loading="lazy"><span class="ai">AI image</span>${n.logo&&BF_ID?`<img class="lg" src="https://cdn.brandfetch.io/domain/${encodeURIComponent(n.logo)}?c=${BF_ID}" alt="" loading="lazy" onerror="this.remove()">`:""}${n.change?`<span class="chg ${n.change[0]=="-"?"dn":"up"}">${esc(n.change)}</span>`:""}</div>`:line(n.seed,n.up,100,40);
 const ARCH_H=72,isFresh=n=>!n.published||Date.now()-new Date(n.published)<ARCH_H*36e5;
-function filtered(){const k=qs.toLowerCase(),all=NEWS.filter(n=>(cat=="All"||n.cat==cat)&&(!k||(n.t+n.s+n.cat).toLowerCase().includes(k))).sort((a,b)=>new Date(b.published||0)-new Date(a.published||0));
- if(k)return all;const fr=all.filter(isFresh),min=cat=="All"?6:3;return fr.length>=min?fr:all.slice(0,Math.max(min,fr.length))}
+function filtered(){const k=qs.toLowerCase(),all=NEWS.filter(n=>(cat=="All"||n.cat==cat)&&(!k||(n.t+n.s+n.cat).toLowerCase().includes(k))&&(!newOnly||(n.published&&new Date(n.published)>PREV))).sort((a,b)=>new Date(b.published||0)-new Date(a.published||0));
+ if(k||newOnly)return all;const fr=all.filter(isFresh),min=cat=="All"?6:3;return fr.length>=min?fr:all.slice(0,Math.max(min,fr.length))}
 function home(loading){document.title="MONVEX — Markets • Money • Momentum";
  const tk=MK.map(m=>{const u=m[2]>=0;return `<div class="tk glow" tabindex="0" data-m="${m[0]}" title="Open ${m[0]} chart"><button class="star ${wl.includes(m[0])?"on":""}" data-w="${m[0]}" aria-label="Toggle watchlist ${m[0]}">${wl.includes(m[0])?"★":"☆"}</button><small>${m[0]}</small><div class="p">${m[1]}</div><div class="c ${u?"up":"dn"}">${u?"▲":"▼"} ${Math.abs(m[2]).toFixed(2)}%</div>${m[4]?realLine(m[4]["1M"],u,100,30):line(m[3]*7,u,100,30,20)}</div>`}).join("");
  const list=filtered(),f=list[0],rest=list.slice(1);
@@ -312,18 +384,18 @@ function home(loading){document.title="MONVEX — Markets • Money • Momentum
  else if(!list.length)body=`<div class="grid"><div class="empty">No stories match your search.</div></div>`;
  else body=`<section class="feat glow" data-id="${f.id}" tabindex="0"><div class="tx"><div class="meta"><span class="tg">${f.cat}</span><span class="mt">${f.source?esc(f.source.name)+" · ":""}${tm(f)}</span><span class="mt">Featured${f.source?" · AI summary":" · Sample"}</span></div><h3>${esc(f.t)}</h3><p class="sm">${esc(f.s)}</p><span class="more">Read full story →</span></div><div class="ch">${(f.img||f.motif)?vis(f):candle(f.seed,f.up)}</div></section><div class="grid">${rest.slice(0,shown).map(card).join("")}</div>${rest.length>shown?`<div class="lm"><button class="ib glow" id="more">Show more stories · ${rest.length-shown} left</button></div>`:""}${!qs&&NEWS.some(n=>!isFresh(n))?`<div class="lm"><a class="ib glow" href="#page-archive" style="text-decoration:none">Older stories · Archive (${NEWS.filter(n=>!isFresh(n)).length}) →</a></div>`:""}`;
  $("#app").innerHTML=`<div class="tick">${tk}</div><p class="note">${MKUP?"Delayed data from Yahoo Finance · updated "+new Date(MKUP).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Sample data for demonstration only — not live prices."}</p>
- <div class="mh">${mstat().map(([n,o])=>`<span class="mhp"><i class="${o?"on":""}"></i>${n} ${o?"Open":"Closed"}</span>`).join("")}<span>Regular hours only; holidays not included.</span></div><div class="cats" id="news"><h2>Latest news${MKUP?`<small class="upd"><i></i>Updated ${ago(MKUP)||"today"}</small>`:""}</h2>${CATS.map(c=>`<button class="chip ${c==cat?"on":""}" data-c="${c}">${c}</button>`).join("")}</div>${qs?`<p class="note" style="margin:0 0 14px">${list.length} ${list.length==1?"story":"stories"} for “${esc(qs)}”</p>`:""}${body}
+ <div class="mh">${mstat().map(([n,o])=>`<span class="mhp"><i class="${o?"on":""}"></i>${n} ${o?"Open":"Closed"}</span>`).join("")}<span>Regular hours only; holidays not included.</span></div><div class="mh2">${mood()}<button class="ib glow" id="listen">🎧 Listen to the brief</button></div>${welcome()}<div class="cats" id="news"><h2>Latest news${MKUP?`<small class="upd"><i></i>Updated ${ago(MKUP)||"today"}</small>`:""}</h2>${CATS.map(c=>`<button class="chip ${c==cat?"on":""}" data-c="${c}">${c}</button>`).join("")}</div>${qs?`<p class="note" style="margin:0 0 14px">${list.length} ${list.length==1?"story":"stories"} for “${esc(qs)}”</p>`:""}${body}
  ${brief()}`;
  wc()}
 function readMin(n){return Math.max(1,Math.round(((n.s||"")+" "+(n.b||[]).join(" ")).split(/\s+/).length/200))}
 function article(id){const n=NEWS.find(x=>x.id==id);if(!n)return home();
  const all=NEWS.slice().sort((a,b)=>new Date(b.published||0)-new Date(a.published||0)),i=all.findIndex(x=>x.id==id),nx=all[i+1],pv=all[i-1],
  rel=all.filter(x=>x.id!=id).sort((a,b)=>(b.cat==n.cat)-(a.cat==n.cat)).slice(0,2),sv=saved.includes(id),extra=(n.b||[]).filter(t=>t&&t!==n.s);
- document.title=n.t+" — MONVEX";
- $("#app").innerHTML=`<div class="art"><a class="back glow" href="#">← Back to news</a><div class="meta"><span class="tg">${n.cat}</span><span class="mt">${n.source?esc(n.source.name)+" · ":""}${tm(n)} · ${readMin(n)} min read</span></div><h1>${esc(n.t)}</h1><p class="lead">${esc(n.s)}</p><div class="ch glow">${(n.img||n.motif)?vis(n):candle(n.seed+3,n.up)}</div>${P(extra).join("")}<div class="acts">${n.source?`<a class="btn pri" href="${esc(n.source.url)}" target="_blank" rel="noopener">Read the full story at ${esc(n.source.name)} ↗</a>`:""}<button class="btn" data-save="${n.id}">${sv?"★ Saved":"☆ Save"}</button><button class="btn" data-share="${n.id}">Share ↗</button><span class="fs"><button class="btn" data-fs="-1" aria-label="Smaller text">A−</button><button class="btn" data-fs="1" aria-label="Larger text">A+</button></span></div>${n.source?`<p class="note ai-note">This summary and cover image were generated by AI from the publisher’s headline and description and may contain mistakes. The original story is the authoritative version.</p>`:""}<h3 class="rh">Related news</h3><div class="rel">${rel.map(card).join("")}</div>${(pv||nx)?`<div class="pn">${pv?`<a class="glow" href="#${pv.id}"><small>← Newer</small>${esc(pv.t)}</a>`:"<span></span>"}${nx?`<a class="glow" href="#${nx.id}"><small>Older →</small>${esc(nx.t)}</a>`:"<span></span>"}</div>`:""}</div>`;scrollTo(0,0)}
+ document.title=n.t+" — MONVEX";const lead=gloss(esc(n.s)),ex=P(extra).join(""),hasGl=/class="gl"/.test(lead+ex);markRead(id);
+ $("#app").innerHTML=`<div class="art"><a class="back glow" href="#">← Back to news</a><div class="meta"><span class="tg">${n.cat}</span><span class="mt">${n.source?esc(n.source.name)+" · ":""}${tm(n)} · ${readMin(n)} min read</span></div><h1>${esc(n.t)}</h1><p class="lead">${lead}</p><div class="ch glow">${(n.img||n.motif)?vis(n):candle(n.seed+3,n.up)}</div>${ex}<div class="acts">${n.source?`<a class="btn pri" href="${esc(n.source.url)}" target="_blank" rel="noopener">Read the full story at ${esc(n.source.name)} ↗</a>`:""}<button class="btn" data-save="${n.id}">${sv?"★ Saved":"☆ Save"}</button><button class="btn" data-share="${n.id}">Share ↗</button><button class="btn" data-listen="${n.id}">🎧 Listen</button><span class="fs"><button class="btn" data-fs="-1" aria-label="Smaller text">A−</button><button class="btn" data-fs="1" aria-label="Larger text">A+</button></span></div>${n.source?`<p class="note ai-note">This summary and cover image were generated by AI from the publisher’s headline and description and may contain mistakes. The original story is the authoritative version.</p>`:""}${hasGl?`<p class="note">💡 Words with a dotted underline have a plain-English explanation. Hover or tap them.</p>`:""}<h3 class="rh">Related news</h3><div class="rel">${rel.map(card).join("")}</div>${(pv||nx)?`<div class="pn">${pv?`<a class="glow" href="#${pv.id}"><small>← Newer</small>${esc(pv.t)}</a>`:"<span></span>"}${nx?`<a class="glow" href="#${nx.id}"><small>Older →</small>${esc(nx.t)}</a>`:"<span></span>"}</div>`:""}</div>`;scrollTo(0,0)}
 function wc(){$("#wc").textContent=wl.length+saved.length;const sv=saved.map(id=>NEWS.find(n=>n.id==id)).filter(Boolean);
  $("#wlist").innerHTML=(wl.length?wl.map(w=>{const m=MK.find(x=>x[0]==w);return `<div class="wi"><div><b>${w}</b><div class="sm">${m[1]}</div></div><span class="${m[2]>=0?"up":"dn"}">${m[2]>=0?"+":""}${m[2].toFixed(2)}%</span><button data-w="${w}" class="chip">Remove</button></div>`}).join(""):`<p class="sm" style="margin-top:14px">Star a market card to add it here.</p>`)+`<h4 style="margin:24px 0 4px">Saved stories</h4>`+(sv.length?sv.map(n=>`<a class="wi" href="#${n.id}" style="text-decoration:none;color:inherit"><span>${esc(n.t)}</span></a>`).join(""):`<p class="sm">Tap “Save” on a story to keep it here.</p>`)}
-let booted=0;function route(){const h=location.hash.slice(1);if(h.startsWith("story-"))article(h);else if(h.startsWith("page-"))infoPage(h);else if(!booted){booted=1;home(false)}else{home(true);setTimeout(()=>home(false),350)}}
+let booted=0;function route(){stopSpeak();const h=location.hash.slice(1);if(h.startsWith("story-"))article(h);else if(h.startsWith("page-"))infoPage(h);else if(!booted){booted=1;home(false)}else{home(true);setTimeout(()=>home(false),350)}}
 function setCat(c){cat=c;shown=9;home(true);setTimeout(()=>home(false),300);document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.c==c))}
 $("#nav").innerHTML=["Markets","News","India","Crypto","Commodities","Tech"].map(c=>`<button data-c="${c}">${c}</button>`).join("");
 document.addEventListener("click",e=>{
@@ -331,7 +403,15 @@ document.addEventListener("click",e=>{
  const mk=e.target.closest(".tk[data-m]");if(mk){openMk(mk.dataset.m);return}
  const nb=e.target.closest("#nav button");if(nb){$("#nav").classList.remove("open");const c=nb.dataset.c=="News"?"All":nb.dataset.c;if(location.hash){history.pushState(null,"",location.pathname+location.search)}setCat(c);setTimeout(()=>$("#news")&&$("#news").scrollIntoView(),50);return}
  const ch=e.target.closest(".chip[data-c]");if(ch){setCat(ch.dataset.c);return}
+ {const g=e.target.closest(".gl");if(g){gshow(g);return}$("#gtip").hidden=true}
  if(e.target.closest("#wlist a"))$("#drawer").classList.remove("open");
+ if(e.target.closest("#listen")){speak(briefLines());return}
+ const ls=e.target.closest("[data-listen]");if(ls){const n=NEWS.find(x=>x.id==ls.dataset.listen);if(n)speak([n.t+". "+n.s]);return}
+ if(e.target.closest("#pl-x")){stopSpeak();return}
+ if(e.target.closest("#pl-pp")){const b=$("#pl-pp");if(speechSynthesis.paused){speechSynthesis.resume();b.textContent="⏸"}else{speechSynthesis.pause();b.textContent="▶"}return}
+ if(e.target.closest("#w-new")){newOnly=true;shown=9;home(false);return}
+ if(e.target.closest("#w-all")){newOnly=false;wGone=true;home(false);return}
+ if(e.target.closest("#w-x")){wGone=true;home(false);return}
  if(e.target.closest("#more")){shown+=9;home(false);return}
  const sv=e.target.closest("[data-save]");if(sv){const k=sv.dataset.save;saved=saved.includes(k)?saved.filter(x=>x!=k):[...saved,k];try{localStorage.setItem("mvx-saved",JSON.stringify(saved))}catch(_){}sv.textContent=saved.includes(k)?"★ Saved":"☆ Save";wc();return}
  const sh=e.target.closest("[data-share]");if(sh){const n=NEWS.find(x=>x.id==sh.dataset.share),u=location.href.split("#")[0]+"#"+n.id;if(navigator.share){navigator.share({title:n.t,url:u}).catch(()=>{})}else if(navigator.clipboard){navigator.clipboard.writeText(u).then(()=>flash("Link copied"),()=>prompt("Copy this link",u))}else prompt("Copy this link",u);return}
